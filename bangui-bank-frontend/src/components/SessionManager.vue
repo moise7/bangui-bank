@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-      <h1 class="sm-title">Vue Session Manager</h1>
+      <h1 class="sm-title">Bangui Bank</h1>
       <div class="sm-card">
           <div v-if="isLoggedIn">
               <button @click="logoutUser" class="logout-button" >Logout</button>
@@ -8,6 +8,7 @@
                   <thead class="thead-dark">
                   <tr class="table-headers">
                       <th scope="col">ID</th>
+                      <th scope="col">username</th>
                       <th scope="col">email</th>
                       <th scope="col">Token</th>
                   </tr>
@@ -15,7 +16,8 @@
                   <tbody>
                   <tr class="table-rows">
                       <th class="table-row">[{{ this.getUserID }}]</th>
-                      <td class="table-row table-row-username">{{ this.getUserEmail }}</td>
+                      <td class="table-row table-row-username">{{ this.getUsername }}</td>
+                      <td class="table-row">{{ this.getUserEmail }}</td>
                       <td class="table-row">{{ this.getAuthToken }}</td>
                   </tr>
                   </tbody>
@@ -23,26 +25,48 @@
           </div>
           <div v-else>
               <h3>Sign Up!</h3>
-                  <form @submit="onSignUp" class="sign-up-form">
-                      <input class="sign-up-form-email" type="email" v-model="signUpEmail" placeholder="Email" />
-                      <br />
-                      <input
-                          type="password"
-                          class="sign-up-form-password"
-                          v-model="signUpPassword"
-                          placeholder="Password"
-                      />
-                      <br />
-                      <input type="submit" value="Sign up" class="sign-up-form-submit" />
-                  </form>
-              <hr />
-              <br />
+                <form @submit="onSignUp" class="sign-up-form">
+                <input
+                    class="sign-up-form-username"
+                    type="text"
+                    v-model="signUpUsername"
+                    placeholder="Username"
+                />
+                <br />
+                <input
+                    class="sign-up-form-email"
+                    type="email"
+                    v-model="signUpEmail"
+                    placeholder="Email"
+                />
+                <br />
+                <input
+                    type="password"
+                    class="sign-up-form-password"
+                    v-model="signUpPassword"
+                    placeholder="Password"
+                />
+                <br />
+                <input type="submit" value="Sign up" class="sign-up-form-submit" />
+                </form>
+                <hr />
+                <br />
               <h3>Login!</h3>
               <form @submit="onLogin" class="login-form">
-                  <input class="login-form-email" type="text" v-model="loginEmail" placeholder="Email" />
-                  <br />
-                  <input class="login-form-password" type="password" v-model="loginPassword" placeholder="Password" />
-                  <br />
+                <input
+                    class="login-form-username"
+                    type="text"
+                    v-model="loginUsername"
+                    placeholder="Username"
+                />
+                <br />
+                <input
+                    type="password"
+                    class="login-form-password"
+                    v-model="loginPassword"
+                    placeholder="Password"
+                />
+                <br />
                   <input type="submit" value="Login" class="login-form-submit" />
               </form>
           </div>
@@ -56,13 +80,14 @@ import { mapActions, mapGetters } from "vuex";
 export default {
   name: "SessionManager",
   computed: {
-      ...mapGetters(["getAuthToken", "getUserEmail", "getUserID", "isLoggedIn"]),
+      ...mapGetters(["getAuthToken", "getUserEmail", "getUsername", "getUserID", "isLoggedIn"]),
   },
   data() {
       return {
+      signUpUsername: "",
       signUpEmail: "",
       signUpPassword: "",
-      loginEmail: "",
+      loginUsername: "",
       loginPassword: "",
       };
   },
@@ -72,6 +97,7 @@ export default {
           event.preventDefault();
           let data = {
           user: {
+          username: this.signUpUsername,
           email: this.signUpEmail,
           password: this.signUpPassword,
           },
@@ -83,7 +109,8 @@ export default {
           event.preventDefault();
           let data = {
               user: {
-                  email: this.loginEmail,
+                  username: this.loginUsername,
+                //   email: this.loginEmail,
                   password: this.loginPassword,
               },
           };
@@ -91,8 +118,10 @@ export default {
           this.resetData();
       },
       resetData() {
+          this.signUpUsername = "";
           this.signUpEmail = "";
           this.signUpPassword = "";
+          this.loginUsername = "";
           this.loginEmail = "";
           this.loginPassword = "";
       },
@@ -122,7 +151,7 @@ box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
 .sign-up-form {
 width: 100%;
 }
-.sign-up-form-email {
+.sign-up-form-email, .sign-up-form-username {
 width: 55%;
 padding: 10px;
 margin: 0 auto;

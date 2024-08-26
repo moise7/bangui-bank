@@ -10,6 +10,7 @@ const state = {
     email: null,
   },
 };
+
 const getters = {
   getAuthToken(state) {
     return state.auth_token;
@@ -20,12 +21,14 @@ const getters = {
   getUserID(state) {
     return state.user?.id;
   },
+  getUsername(state) {
+    return state.user?.username;
+  },
   isLoggedIn(state) {
-    const loggedOut =
-      state.auth_token == null || state.auth_token == JSON.stringify(null);
-    return !loggedOut;
+    return state.auth_token != null && state.auth_token !== JSON.stringify(null);
   },
 };
+
 const actions = {
   registerUser({ commit }, payload) {
     return new Promise((resolve, reject) => {
@@ -41,7 +44,7 @@ const actions = {
     });
   },
   loginUser({ commit }, payload) {
-    new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       axios
         .post(`${BASE_URL}users/sign_in`, payload)
         .then((response) => {
@@ -56,10 +59,10 @@ const actions = {
   logoutUser({ commit }) {
     const config = {
       headers: {
-        authorization: state.auth_token,
+        Authorization: `${state.auth_token}`, // Include token as Bearer
       },
     };
-    new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       axios
         .delete(`${BASE_URL}users/sign_out`, config)
         .then(() => {
@@ -74,10 +77,10 @@ const actions = {
   loginUserWithToken({ commit }, payload) {
     const config = {
       headers: {
-        Authorization: payload.auth_token,
+        Authorization: `Bearer ${payload.auth_token}`, // Include token as Bearer
       },
     };
-    new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       axios
         .get(`${BASE_URL}member-data`, config)
         .then((response) => {
@@ -90,16 +93,18 @@ const actions = {
     });
   },
 };
+
 const mutations = {
   setUserInfo(state, data) {
     state.user = data.data.user;
     state.auth_token = data.headers.authorization;
-    axios.defaults.headers.common["Authorization"] = data.headers.authorization;
-    localStorage.setItem("auth_token", data.headers.authorization);
+    axios.defaults.headers.common["Authorization"] = state.auth_token;
+    localStorage.setItem("auth_token", state.auth_token);
   },
   setUserInfoFromToken(state, data) {
     state.user = data.data.user;
     state.auth_token = localStorage.getItem("auth_token");
+    axios.defaults.headers.common["Authorization"] = state.auth_token;
   },
   resetUserInfo(state) {
     state.user = {
@@ -112,6 +117,7 @@ const mutations = {
     axios.defaults.headers.common["Authorization"] = null;
   },
 };
+
 export default {
   state,
   getters,
