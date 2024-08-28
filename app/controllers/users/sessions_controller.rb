@@ -19,15 +19,6 @@ class Users::SessionsController < Devise::SessionsController
     }, status: :ok
   end
 
-  # Custom response for logout
-  # def respond_to_on_destroy
-  #   if user_signed_in?
-  #     log_out_failure
-  #   else
-  #     log_out_success
-  #   end
-  # end
-
   # Custom logout success response
   def log_out_success
     Rails.logger.info "Logout success: No user signed in."

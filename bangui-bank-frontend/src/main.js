@@ -1,10 +1,9 @@
-import { createApp } from "vue";
-import App from "./App.vue";
-import store from "./store";
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';
+import './index.css'
 
-/**
- * Load JWT from Local Storage on Refresh.
- */
 let localAuthToken = localStorage.auth_token;
 let cookieExists = localAuthToken !== "undefined" && localAuthToken !== null;
 if (cookieExists) {
@@ -14,4 +13,5 @@ if (cookieExists) {
     store.dispatch("loginUserWithToken", { auth_token });
   }
 }
-createApp(App).use(store).mount("#app");
+
+createApp(App).use(router).use(store).mount('#app');

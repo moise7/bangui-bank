@@ -4,9 +4,11 @@ Rails.application.routes.draw do
                sessions: 'users/sessions',
                registrations: 'users/registrations'
              }
-  get '/member-data', to: 'members#show'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Defines the root path route ("/")
-  root :users
+  get '/member-data', to: 'members#show'
+
+  # Correctly define the root path
+  root 'home#index' # Assuming you have a HomeController with an index action
+    # Define a dashboard route
+    get '/dashboard', to: 'dashboard#index', as: 'user_dashboard'
 end
