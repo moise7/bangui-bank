@@ -1,0 +1,53 @@
+<!-- app/views/admin/dashboard/index.html.erb -->
+<h1>Admin Dashboard</h1>
+<p>Welcome to the admin dashboard!</p>
+
+<!-- Display total users and balance -->
+<h2>Total Users: <%= @users.count %></h2>
+<h2>Total Balance: $<%= @users.sum(:balance).round(2) %></h2>
+
+<!-- Display recent transactions -->
+<h3>Recent Transactions</h3>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Amount</th>
+      <th>Created At</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @recent_transactions.each do |transaction| %>
+      <tr>
+        <td><%= transaction.id %></td>
+        <td>$<%= transaction.amount %></td>
+        <td><%= transaction.created_at %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<!-- Manage Users -->
+<h3>Manage Users</h3>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Email</th>
+      <th>Balance</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user.id %></td>
+        <td><%= user.email %></td>
+        <td>$<%= user.balance %></td>
+        <td>
+          <%= link_to 'Add Money', add_money_admin_user_path(user) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

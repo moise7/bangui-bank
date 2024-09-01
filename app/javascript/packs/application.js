@@ -14,6 +14,9 @@
 //
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
+// app/javascript/packs/application.js
+import Rails from "@rails/ujs";
+Rails.start();
 
 
 console.log('Hello World from Webpacker')
