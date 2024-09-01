@@ -1,0 +1,20 @@
+
+<!-- app/views/admin_registrations/new.html.erb -->
+<h1>Admin Signup</h1>
+<%= form_with model: @admin, url: admin_signup_path, method: :post do |f| %>
+  <div>
+    <%= f.label :email %>
+    <%= f.email_field :email %>
+  </div>
+  <div>
+    <%= f.label :password %>
+    <%= f.password_field :password %>
+  </div>
+  <div>
+    <%= f.label :password_confirmation %>
+    <%= f.password_field :password_confirmation %>
+  </div>
+  <div>
+    <%= f.submit 'Sign Up' %>
+  </div>
+<% end %>

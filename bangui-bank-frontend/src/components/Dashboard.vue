@@ -1,22 +1,30 @@
 <template>
   <div class="dashboard">
     <nav class="top-nav">
-      <a href="#" v-for="item in navItems" :key="item" @click="handleNavClick(item)">{{ item }}</a>
+      <a href="#" v-for="item in navItems" :key="item" @click="handleNavClick(item)">
+        {{ item }}
+      </a>
     </nav>
 
     <div class="dashboard-content">
+      <!-- User Information Section -->
+
+
       <!-- Accounts Section -->
       <div class="accounts-section">
         <h2>Accounts</h2>
         <div class="account-info">
-          <h3>Easy Banking Club *0659</h3>
-          <p>Available Balance: $301.11</p>
-          <p>Current Balance: $378.60</p>
-          <a href="#" class="make-transfer">Make a Transfer</a>
+          <div class="user-info" v-if="user">
+            <p><strong>Available Balance:</strong> ${{ user.balance }}</p>
+            <p><strong>Created At:</strong> {{ new Date(user.created_at).toLocaleDateString() }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+          </div>
+          <router-link to="/transfer-form" class="make-transfer">Make a Transfer</router-link>
         </div>
         <div class="account-actions">
           <h3>Make Transfer</h3>
-          <router-link to="/send-money" class="btn-transfer">Send Money</router-link>
+          <router-link to="/transfer-form" class="btn-transfer">Send Money</router-link>
           <button class="btn-settings">Settings</button>
         </div>
         <div class="connected-accounts">
@@ -87,6 +95,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 export default {
@@ -102,7 +111,8 @@ export default {
         { id: 2, date: '2024-07-28', description: 'Internet Bill', amount: '-$60.00' },
         { id: 3, date: '2024-07-15', description: 'Phone Bill', amount: '-$30.00' },
         // Add more payments as needed
-      ]
+      ],
+      user: null, // Data property for user information
     }
   },
   setup() {
@@ -144,7 +154,17 @@ export default {
       return dates;
     }
   },
+
   methods: {
+    async fetchUserData() {
+      try {
+        // Replace with the actual API endpoint URL
+        const response = await axios.get('http://localhost:3000/api/users/5');
+        this.user = response.data;
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    },
     previousMonth() {
       this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1);
     },
@@ -180,6 +200,9 @@ export default {
         }
       }
     }
+  },
+  mounted() {
+    this.fetchUserData();
   }
 }
 </script>

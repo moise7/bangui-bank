@@ -51,3 +51,8 @@ gem "devise-jwt", "~> 0.12.1"
 gem "rack-cors", "~> 2.0"
 gem "jwt"
 gem "pry"
+gem 'bcrypt', '~> 3.1.7'
+gem 'webpacker'
+gem "cssbundling-rails", "~> 1.4"
+gem 'importmap-rails'
+

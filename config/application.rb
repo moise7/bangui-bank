@@ -18,6 +18,9 @@ module DeviseVue
     config.middleware.use ActionDispatch::Cookies
 
     config.middleware.use config.session_store, config.session_options
+    config.middleware.use ActionDispatch::Flash
+    # config.assets.enabled = true
+
 
     # Configuration for the application, engines, and railties goes here.
     #

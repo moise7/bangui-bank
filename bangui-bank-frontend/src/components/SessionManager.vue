@@ -241,3 +241,88 @@ padding: 10px;
 width: 30%;
 }
 </style>
+
+<style scoped>
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+.home {
+  text-align: center;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.custom-nav {
+  background-color: white !important; /* Override Bootstrap default background */
+  padding: 1em;
+}
+
+.custom-nav .nav-link {
+  color: black !important; /* Override Bootstrap default text color */
+  margin: 0 1em;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.custom-nav .nav-link:hover {
+  color: #007bff; /* Optional: Change hover color if desired */
+}
+
+.content {
+  padding: 2em;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+h1 {
+  font-size: 2.5em;
+  margin-bottom: 1em;
+}
+
+.signup-form {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+
+.signup-form input {
+  padding: 0.5em;
+  font-size: 1em;
+  margin-right: 1em;
+  border: none;
+  border-radius: 4px;
+}
+
+.signup-form button {
+  padding: 0.5em 1em;
+  font-size: 1em;
+  background-color: white;
+  color: #00a300;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.signup-form button:hover {
+  background-color: #e6e6e6;
+}
+
+.account-info {
+  font-size: 1em;
+}
+
+.footer {
+  padding: 1em;
+  background-color: #008000;
+  font-size: 0.8em;
+  color: #d9d9d9;
+}
+</style>

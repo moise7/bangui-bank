@@ -1,22 +1,88 @@
 <template>
-  <div class="home">
-    <b-nav bg-secondary>
-      <router-link to="/login" class="nav-link">Log In</router-link>
-      <router-link to="/signup" class="nav-link">Sign Up</router-link>
-    </b-nav>
-    <div class="content">
-      <h1>Online Banking for Central Africa Republic</h1>
-      <div class="signup-form">
-        <input v-model="email" type="email" placeholder="Enter your email" />
-        <button @click="signUp">Sign Up</button>
+  <div>
+    <header class="sticky top-0 z-50 flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-gray-800 text-sm py-3">
+      <nav class="max-w-[85rem] w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between">
+        <div class="flex items-center justify-between">
+          <a class="flex-none text-xl font-semibold text-white focus:outline-none focus:opacity-80" href="#">Babara Bank</a>
+          <div class="sm:hidden">
+            <button type="button" class="hs-collapse-toggle relative size-7 flex justify-center items-center gap-2 rounded-lg border border-gray-700 font-medium bg-gray-800 text-gray-400 shadow-sm align-middle hover:bg-gray-700/20 focus:outline-none focus:bg-gray-700/20 text-sm" id="hs-navbar-dark-collapse" aria-expanded="false" aria-controls="hs-navbar-dark" aria-label="Toggle navigation" data-hs-collapse="#hs-navbar-dark">
+              <svg class="hs-collapse-open:hidden shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+              <svg class="hs-collapse-open:block hidden shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="hs-navbar-dark" class="hidden hs-collapse overflow-hidden transition-all duration-300 basis-full grow sm:block" aria-labelledby="hs-navbar-dark-collapse">
+          <div class="flex flex-col gap-5 mt-5 sm:flex-row sm:items-center sm:justify-end sm:mt-0 sm:ps-5">
+            <router-link to="/login" class="font-medium text-white focus:outline-none" aria-current="page">Log In</router-link>
+            <router-link to="/signup" custom v-slot="{ navigate }">
+              <button @click="navigate" type="button" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+                Sign Up
+              </button>
+            </router-link>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <!-- Main Content -->
+    <body>
+      <div class="bg-background2 py-24 text-center">
+        <h1 class="text-3xl font-bold leading-normal">Votre partenaire financier tout-en-un. </h1>
+        <p>Compte personnel, carte de débit pratique, transferts d'argent à faible coût—tout ce dont vous avez besoin est ici.</p>
+        <div class="signup-form mt-3">
+          <input
+            v-model="email"
+            type="email"
+            placeholder="Enter your email"
+            class="
+              w-full lg:w-auto
+              p-3 rounded border-gray-300
+            focus:ring-gray-300
+            focus:border-gray-300
+            text-md"
+          />
+          <button
+            class="ml-4 lg:w- text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded text-md p-3 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+            @click="signUp"
+          >
+            Sign Up
+          </button>
+        </div>
+        <p class="account-info mt-3">Already have an account?</p>
       </div>
-      <p class="account-info">Already have an account?</p>
-    </div>
-    <div class="footer">
-      <span>Online Banking</span>
-    </div>
+
+      <div class="grid grid-cols-2 container">
+        <div>
+          <h1>Banque Personnelle - Dites Adieu à l'Absence de Compte Bancaire</h1>
+          <p>
+            vous n'avez plus à vous soucier de ne pas avoir de compte bancaire.
+            Nous facilitons l'ouverture d'un compte personnel adapté à vos besoins,
+            avec une gestion simple et accessible à tout moment. Profitez d'une expérience bancaire moderne et sécurisée, conçue pour vous simplifier la vie.
+          </p>
+          <button class="rounded">Learn More</button>
+        </div>
+        <div>
+          <img src="../assets/images/homepage-background.jpg">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 container">
+        <div>
+          <h1>Banque Personnelle - Dites Adieu à l'Absence de Compte Bancaire</h1>
+          <p>
+            vous n'avez plus à vous soucier de ne pas avoir de compte bancaire.
+            Nous facilitons l'ouverture d'un compte personnel adapté à vos besoins,
+            avec une gestion simple et accessible à tout moment. Profitez d'une expérience bancaire moderne et sécurisée, conçue pour vous simplifier la vie.
+          </p>
+          <button class="rounded">Learn More</button>
+        </div>
+        <div>
+          <img src="../assets/images/homepage-background.jpg">
+        </div>
+      </div>
+    </body>
   </div>
 </template>
+
 
 <script>
 import { ref } from 'vue'
@@ -30,7 +96,6 @@ export default {
 
     const signUp = async () => {
       console.log("Sign up with email:", email.value)
-      // Implement actual signup logic here
     }
 
     return {
@@ -40,89 +105,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-.home {
-  text-align: center;
-  background-color: #00a300;
-  color: white;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.custom-nav {
-  background-color: white !important; /* Override Bootstrap default background */
-  padding: 1em;
-}
-
-.custom-nav .nav-link {
-  color: black !important; /* Override Bootstrap default text color */
-  margin: 0 1em;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.custom-nav .nav-link:hover {
-  color: #007bff; /* Optional: Change hover color if desired */
-}
-
-.content {
-  padding: 2em;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-h1 {
-  font-size: 2.5em;
-  margin-bottom: 1em;
-}
-
-.signup-form {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1em;
-}
-
-.signup-form input {
-  padding: 0.5em;
-  font-size: 1em;
-  margin-right: 1em;
-  border: none;
-  border-radius: 4px;
-}
-
-.signup-form button {
-  padding: 0.5em 1em;
-  font-size: 1em;
-  background-color: white;
-  color: #00a300;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.signup-form button:hover {
-  background-color: #e6e6e6;
-}
-
-.account-info {
-  font-size: 1em;
-}
-
-.footer {
-  padding: 1em;
-  background-color: #008000;
-  font-size: 0.8em;
-  color: #d9d9d9;
-}
-</style>

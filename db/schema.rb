@@ -10,13 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_26_204936) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_31_224131) do
+  create_table "admins", force: :cascade do |t|
+    t.string "email"
+    t.string "encrypted_password"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "bank_transactions", force: :cascade do |t|
+    t.integer "sender_id"
+    t.integer "receiver_id"
+    t.decimal "amount", precision: 15, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["receiver_id"], name: "index_bank_transactions_on_receiver_id"
+    t.index ["sender_id"], name: "index_bank_transactions_on_sender_id"
+  end
+
   create_table "jwt_denylist", force: :cascade do |t|
     t.string "jti", null: false
     t.datetime "exp", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_jwt_denylist_on_jti"
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.decimal "amount", precision: 15, scale: 2
+    t.string "transaction_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -29,9 +53,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_26_204936) do
     t.datetime "updated_at", null: false
     t.string "username"
     t.boolean "password_reset_required"
+    t.decimal "balance", precision: 15, scale: 2, default: "0.0"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "bank_transactions", "users", column: "receiver_id"
+  add_foreign_key "bank_transactions", "users", column: "sender_id"
 end
