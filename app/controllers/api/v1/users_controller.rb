@@ -4,12 +4,6 @@ class Api::V1::UsersController < ApplicationController
 
   # GET /api/v1/users
   def index
-    # Pagination (if needed)
-    # page = params[:page] || 1
-    # per_page = params[:per_page] || 10
-    # @users = User.select(:email, :created_at, :username, :balance)
-    #              .paginate(page: page, per_page: per_page)
-
     @users = User.select(:email, :created_at, :username, :balance).map do |user|
       user.as_json.merge(
         balance: format('%.2f', user.balance)  # Format balance to two decimal places

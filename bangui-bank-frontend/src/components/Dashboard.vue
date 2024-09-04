@@ -159,7 +159,7 @@ export default {
     async fetchUserData() {
       try {
         // Replace with the actual API endpoint URL
-        const response = await axios.get('http://localhost:3000/api/users/5');
+        const response = await axios.get('http://localhost:3000/api/v1/users/5');
         this.user = response.data;
       } catch (error) {
         console.error('Failed to fetch user data:', error);

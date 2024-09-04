@@ -22,7 +22,7 @@ Rails.application.routes.draw do
   # Admin namespace routes
   namespace :admin do
     root 'dashboard#index' # Admin dashboard root route
-    resources :users, only: [:index, :edit, :update] do
+    resources :users, only: [:index, :show] do
       member do
         get 'add_money'    # Custom route for adding money
         post 'update_balance' # To handle the actual update
