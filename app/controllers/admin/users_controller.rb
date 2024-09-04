@@ -5,6 +5,10 @@ class Admin::UsersController < ApplicationController
     @users = User.all
   end
 
+  def profile
+    render json: current_user.as_json(only: [:id, :name, :email])
+  end
+
   def edit
     @user = User.find(params[:id])
   end

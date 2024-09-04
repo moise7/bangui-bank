@@ -23,12 +23,15 @@
     <div v-if="loginError" class="text-red-500 mt-4">
       {{ loginError }}
     </div>
+    <p class="text-blue-600 mt-4">
+      <router-link to="/signup">Don't have an account? Sign up</router-link>
+    </p>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import { useRouter } from "vue-router";
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user'; // Adjust the path as necessary
 
 export default {
   name: 'Login',
@@ -36,48 +39,54 @@ export default {
     return {
       loginUsername: '',
       loginPassword: '',
-      loginError: '', // Add a data property for handling login errors
+      loginError: '',
     };
   },
-  computed: {
-    ...mapGetters(["getAuthToken", "getUserEmail", "getUsername", "getUserID", "isLoggedIn"]),
-  },
-  methods: {
-    ...mapActions(["loginUser"]),
+  setup() {
+    const router = useRouter();
+    const userStore = useUserStore();
 
-    async onLogin(event) {
+    const onLogin = async (event) => {
       event.preventDefault();
-      this.loginError = ''; // Clear previous errors
+      loginError.value = ''; // Clear previous errors
 
-      let data = {
+      const data = {
         user: {
-          username: this.loginUsername,
-          password: this.loginPassword,
+          username: loginUsername.value,
+          password: loginPassword.value,
         },
       };
 
       try {
         // Call the loginUser action and wait for it to complete
-        await this.loginUser(data);
+        await userStore.loginUser(data);
 
         // Redirect to the dashboard on successful login
-        if (this.isLoggedIn) {
-          this.$router.push('/dashboard'); // Adjust the path as needed
+        if (userStore.isAuthenticated) {
+          router.push('/dashboard'); // Adjust the path as needed
         } else {
-          this.loginError = 'Login failed. Please check your credentials and try again.';
+          loginError.value = 'Login failed. Please check your credentials and try again.';
         }
       } catch (error) {
         console.error('Login failed:', error);
-        this.loginError = 'An error occurred during login. Please try again.';
+        loginError.value = 'An error occurred during login. Please try again.';
       }
 
-      this.resetData();
-    },
+      resetData();
+    };
 
-    resetData() {
-      this.loginUsername = '';
-      this.loginPassword = '';
-    },
+    const resetData = () => {
+      loginUsername.value = '';
+      loginPassword.value = '';
+    };
+
+    return {
+      loginUsername,
+      loginPassword,
+      loginError,
+      onLogin,
+      resetData,
+    };
   },
 };
 </script>

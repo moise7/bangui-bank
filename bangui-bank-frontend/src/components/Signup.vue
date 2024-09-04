@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import "@/store/index.js";
+import "@/stores/index.js";
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "SessionManager",

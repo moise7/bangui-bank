@@ -16,6 +16,9 @@ class User < ApplicationRecord
   # Validations
   validates :balance, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
+  # Ensure a jti is generated for JWT authentication
+  before_create :generate_jti
+
   # Transfer money to another user
   def transfer_money_to(receiver, amount)
     raise "Insufficient funds" if balance < amount
@@ -38,5 +41,9 @@ class User < ApplicationRecord
 
   def send_notification_to(user, amount)
     TwilioClient.new.send_message(user.phone_number, "You've received $#{amount} from #{email}")
+  end
+
+  def generate_jti
+    self.jti ||= SecureRandom.uuid
   end
 end

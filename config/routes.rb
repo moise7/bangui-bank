@@ -30,6 +30,24 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :api do
+    namespace :v1 do
+      # Custom routes for sessions and users
+      post 'sessions', to: 'sessions#create'
+      delete 'sessions', to: 'sessions#destroy'
+      resources :users, only: [:index, :show]
+      post 'sign_up', to: 'users#sign_up'
+
+      # Devise routes for API
+      devise_scope :user do
+        post 'sign_in', to: 'sessions#create'
+        delete 'sign_out', to: 'sessions#destroy'
+        post 'sign_up', to: 'registrations#create'
+      end
+    end
+  end
+
+
   # Define other routes
   get '/member-data', to: 'members#show'
   root 'home#index' # Root route for the application
