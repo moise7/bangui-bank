@@ -26,7 +26,9 @@ const getters = {
     return state.user?.username;
   },
   isLoggedIn(state) {
-    return state.auth_token != null && state.auth_token !== JSON.stringify(null);
+    const loggedOut =
+      state.auth_token == null || state.auth_token == JSON.stringify(null);
+    return !loggedOut;
   },
 };
 
@@ -60,10 +62,10 @@ const actions = {
   logoutUser({ commit }) {
     const config = {
       headers: {
-        Authorization: `${state.auth_token}`, // Include token as Bearer
+        authorization: state.auth_token,
       },
     };
-    return new Promise((resolve, reject) => {
+    new Promise((resolve, reject) => {
       axios
         .delete(`${BASE_URL}users/sign_out`, config)
         .then(() => {
@@ -78,10 +80,10 @@ const actions = {
   loginUserWithToken({ commit }, payload) {
     const config = {
       headers: {
-        Authorization: `Bearer ${payload.auth_token}`, // Include token as Bearer
+        Authorization: payload.auth_token,
       },
     };
-    return new Promise((resolve, reject) => {
+    new Promise((resolve, reject) => {
       axios
         .get(`${BASE_URL}member-data`, config)
         .then((response) => {
@@ -99,13 +101,12 @@ const mutations = {
   setUserInfo(state, data) {
     state.user = data.data.user;
     state.auth_token = data.headers.authorization;
-    axios.defaults.headers.common["Authorization"] = state.auth_token;
-    localStorage.setItem("auth_token", state.auth_token);
+    axios.defaults.headers.common["Authorization"] = data.headers.authorization;
+    localStorage.setItem("auth_token", data.headers.authorization);
   },
   setUserInfoFromToken(state, data) {
     state.user = data.data.user;
     state.auth_token = localStorage.getItem("auth_token");
-    axios.defaults.headers.common["Authorization"] = state.auth_token;
   },
   resetUserInfo(state) {
     state.user = {

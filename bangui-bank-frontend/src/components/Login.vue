@@ -30,71 +30,92 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/user'; // Adjust the path as necessary
+import { mapActions, mapGetters } from "vuex";
 
 export default {
-  name: 'Login',
+  name: "Login",
   data() {
     return {
-      loginUsername: '',
-      loginPassword: '',
-      loginError: '',
+      loginUsername: "",
+      loginPassword: "",
+      loginError: null,
     };
   },
-  setup() {
-    const router = useRouter();
-    const userStore = useUserStore();
-
-    const onLogin = async (event) => {
+  computed: {
+    ...mapGetters(["isLoggedIn"]),
+  },
+  methods: {
+    ...mapActions(["loginUser"]),
+    async onLogin(event) {
       event.preventDefault();
-      loginError.value = ''; // Clear previous errors
-
       const data = {
-        user: {
-          username: loginUsername.value,
-          password: loginPassword.value,
-        },
+        username: this.loginUsername, // Use username here
+        password: this.loginPassword,
       };
 
       try {
-        // Call the loginUser action and wait for it to complete
-        await userStore.loginUser(data);
+        const response = await this.loginUser(data);
 
-        // Redirect to the dashboard on successful login
-        if (userStore.isAuthenticated) {
-          router.push('/dashboard'); // Adjust the path as needed
+        if (response.status === 200) {
+          this.$router.push("/dashboard"); // Redirect on success
         } else {
-          loginError.value = 'Login failed. Please check your credentials and try again.';
+          this.loginError = "Login failed. Please check your username and password.";
         }
       } catch (error) {
-        console.error('Login failed:', error);
-        loginError.value = 'An error occurred during login. Please try again.';
+        this.loginError = "There was an error logging in. Please try again.";
       }
-
-      resetData();
-    };
-
-    const resetData = () => {
-      loginUsername.value = '';
-      loginPassword.value = '';
-    };
-
-    return {
-      loginUsername,
-      loginPassword,
-      loginError,
-      onLogin,
-      resetData,
-    };
+    },
   },
 };
 </script>
 
 <style scoped>
-/* Add styles specific to login form */
-.error-message {
-  color: red;
-  margin-top: 10px;
+.login {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+form {
+  width: 100%;
+  max-width: 400px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="submit"] {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+  background-color: #155aaf;
+}
+
+.text-red-500 {
+  color: #f44336;
+}
+
+.text-blue-600 {
+  color: #1a73e8;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 </style>

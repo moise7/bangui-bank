@@ -33,9 +33,10 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       # Custom routes for sessions and users
+      get 'user_data', to: 'users#user_data'
       post 'sessions', to: 'sessions#create'
       delete 'sessions', to: 'sessions#destroy'
-      resources :users, only: [:index, :show]
+      resources :users, only: [:user_data, :create, :update, :destroy]
       post 'sign_up', to: 'users#sign_up'
 
       # Devise routes for API

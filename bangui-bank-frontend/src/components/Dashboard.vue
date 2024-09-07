@@ -9,7 +9,13 @@
     <div class="dashboard-content">
       <!-- User Information Section -->
 
-
+      <div class="user-info-section" v-if="userProfile">
+        <h2>User Information</h2>
+        <p><strong>Name:</strong> {{ userProfile.name }}</p>
+        <p><strong>Email:</strong> {{ userProfile.email }}</p>
+        <p><strong>Username:</strong> {{ userProfile.username }}</p>
+        <p><strong>Created At:</strong> {{ new Date(userProfile.created_at).toLocaleDateString() }}</p>
+      </div>
       <!-- Accounts Section -->
       <div class="accounts-section">
         <h2>Accounts</h2>
@@ -93,53 +99,59 @@
     </div>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 
 export default {
   name: 'BankingDashboard',
-  data() {
-    return {
-      navItems: ['Accounts', 'Move Money', 'Financial Tools', 'Card Control', 'Send Money', 'Additional Services', 'Logout'],
-      currentDate: new Date(),
-      daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-      calculatorButtons: ['C', '±', '%', '÷', '7', '8', '9', '×', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='],
-      payments: [
-        { id: 1, date: '2024-08-01', description: 'Electric Bill', amount: '-$120.45' },
-        { id: 2, date: '2024-07-28', description: 'Internet Bill', amount: '-$60.00' },
-        { id: 3, date: '2024-07-15', description: 'Phone Bill', amount: '-$30.00' },
-        // Add more payments as needed
-      ],
-      user: null, // Data property for user information
-    }
-  },
   setup() {
     const router = useRouter();
+    const route = useRoute();
 
-    function handleNavClick(item) {
+    const navItems = ['Accounts', 'Move Money', 'Financial Tools', 'Card Control', 'Send Money', 'Additional Services', 'Logout'];
+    const currentDate = ref(new Date());
+    const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    const calculatorButtons = ['C', '±', '%', '÷', '7', '8', '9', '×', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='];
+    const payments = ref([
+      { id: 1, date: '2024-08-01', description: 'Electric Bill', amount: '-$120.45' },
+      { id: 2, date: '2024-07-28', description: 'Internet Bill', amount: '-$60.00' },
+      { id: 3, date: '2024-07-15', description: 'Phone Bill', amount: '-$30.00' },
+      // Add more payments as needed
+    ]);
+    const user = ref(null);
+
+    const fetchUserData = async () => {
+      const userId = route.params.userId;
+      console.log(userId)
+      if (!userId) {
+        console.error('User ID is required');
+        return;
+      }
+      try {
+        const response = await axios.get(`/api/v1/user_data/${userId}`);
+        user.value = response.data;
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+
+    const handleNavClick = (item) => {
       if (item === 'Logout') {
-        // Clear user session or authentication state here
         router.push('/');
       } else if (item === 'Send Money') {
-        router.push('/send-money');
-      } else {
-        // Handle other navigation items if needed
+        router.push('/transfer-form'); // Ensure this matches your route
       }
-    }
+    };
 
-    return {
-      handleNavClick
-    }
-  },
-  computed: {
-    currentMonthYear() {
-      return this.currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-    },
-    calendarDates() {
-      const year = this.currentDate.getFullYear();
-      const month = this.currentDate.getMonth();
+    const currentMonthYear = computed(() => {
+      return currentDate.value.toLocaleString('default', { month: 'long', year: 'numeric' });
+    });
+
+    const calendarDates = computed(() => {
+      const year = currentDate.value.getFullYear();
+      const month = currentDate.value.getMonth();
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
 
@@ -152,36 +164,29 @@ export default {
       }
 
       return dates;
-    }
-  },
+    });
 
-  methods: {
-    async fetchUserData() {
-      try {
-        // Replace with the actual API endpoint URL
-        const response = await axios.get('http://localhost:3000/api/v1/users/5');
-        this.user = response.data;
-      } catch (error) {
-        console.error('Failed to fetch user data:', error);
-      }
-    },
-    previousMonth() {
-      this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1);
-    },
-    nextMonth() {
-      this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1);
-    },
-    isCurrentMonth(date) {
-      return date.getMonth() === this.currentDate.getMonth();
-    },
-    isToday(date) {
+    const previousMonth = () => {
+      currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1);
+    };
+
+    const nextMonth = () => {
+      currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1);
+    };
+
+    const isCurrentMonth = (date) => {
+      return date.getMonth() === currentDate.value.getMonth();
+    };
+
+    const isToday = (date) => {
       const today = new Date();
       return date.getDate() === today.getDate() &&
              date.getMonth() === today.getMonth() &&
              date.getFullYear() === today.getFullYear();
-    },
-    handleCalculatorButtonClick(button) {
-      const display = this.$refs.calculatorDisplay;
+    };
+
+    const handleCalculatorButtonClick = (button) => {
+      const display = document.querySelector('.calculator-display');
       let currentText = display.innerText;
 
       if (button === 'C') {
@@ -199,13 +204,32 @@ export default {
           display.innerText += button;
         }
       }
-    }
-  },
-  mounted() {
-    this.fetchUserData();
+    };
+
+    onMounted(() => {
+      fetchUserData();
+    });
+
+    return {
+      navItems,
+      currentDate,
+      daysOfWeek,
+      calculatorButtons,
+      payments,
+      user,
+      handleNavClick,
+      currentMonthYear,
+      calendarDates,
+      previousMonth,
+      nextMonth,
+      isCurrentMonth,
+      isToday,
+      handleCalculatorButtonClick
+    };
   }
-}
+};
 </script>
+
 
 <style scoped>
 .dashboard {

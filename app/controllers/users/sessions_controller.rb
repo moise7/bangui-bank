@@ -2,32 +2,38 @@
 class Users::SessionsController < Devise::SessionsController
   respond_to :json
 
-  # Override the default destroy action
-  def destroy
-    Rails.logger.info "Attempting to log out user: #{current_user.inspect}"
-    super
-  end
-
   private
 
-  # Custom response for successful login
-  def respond_with(_resource, _opts = {})
-    Rails.logger.info "User logged in successfully: #{current_user.inspect}"
+  def respond_with(resource, _opts = {})
+    token = generate_token(resource) if resource
     render json: {
       message: 'You are logged in.',
-      user: current_user
+      user: {
+        id: resource.id,
+        email: resource.email,
+        username: resource.username
+      },
+      token: token
     }, status: :ok
   end
 
-  # Custom logout success response
+  def respond_to_on_destroy
+    if current_user
+      log_out_success
+    else
+      log_out_failure
+    end
+  end
+
   def log_out_success
-    Rails.logger.info "Logout success: No user signed in."
     render json: { message: 'You are logged out.' }, status: :ok
   end
 
-  # Custom logout failure response
   def log_out_failure
-    Rails.logger.info "Logout failure: User still signed in: #{current_user.inspect}"
-    render json: { message: 'Hmm, nothing happened.' }, status: :unauthorized
+    render json: { message: 'Hmm nothing happened.' }, status: :unauthorized
+  end
+
+  def generate_token(user)
+    JwtService.encode(user_id: user.id)
   end
 end

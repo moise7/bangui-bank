@@ -13,8 +13,9 @@ class ApplicationController < ActionController::Base
 
   # Permit additional parameters for user sign-up and account update
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:username])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:username])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:username, :email, :password])
+    # devise_parameter_sanitizer.permit(:account_update, keys: [:username, :email, :password, :current_password])
+    devise_parameter_sanitizer.permit(:sign_in, keys: [:username])
   end
 
   # Redirect to user's dashboard after signing in or signing up

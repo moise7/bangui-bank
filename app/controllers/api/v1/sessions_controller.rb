@@ -1,20 +1,29 @@
-class Api::V1::SessionsController < Devise::SessionsController
-  skip_before_action :verify_authenticity_token, only: [:create, :destroy]
-  respond_to :json
-
+class Api::V1::SessionsController < ApplicationController
+  skip_before_action :verify_authenticity_token
 
   def create
-    user = User.find_for_database_authentication(email: params[:user][:email])
-    if user&.valid_password?(params[:user][:password])
-      sign_in(user)
-      render json: { token: current_user.authentication_token }, status: :ok
+    Rails.logger.debug "Received params: #{params.inspect}"
+
+    # Change user lookup to use username instead of email
+    user = User.find_by(username: session_params[:username])
+
+    if user&.valid_password?(session_params[:password])
+      token = generate_token(user)
+      render json: { user: user.as_json(only: [:id, :username]), token: token }, status: :ok
     else
-      render json: { error: 'Invalid email or password' }, status: :unauthorized
+      render json: { error: 'Invalid username or password' }, status: :unauthorized
     end
   end
 
-  def destroy
-    sign_out(current_user)
-    render json: { message: 'Signed out successfully' }, status: :ok
+  private
+
+  def session_params
+    # Adjust the params to permit the username instead of email
+    params.permit(:username, :password)
+  end
+
+  def generate_token(user)
+    # Ensure this method generates a valid JWT token
+    JwtService.encode(user_id: user.id)
   end
 end
