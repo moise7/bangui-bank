@@ -14,13 +14,12 @@ class ApplicationController < ActionController::Base
   # Permit additional parameters for user sign-up and account update
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [:username, :email, :password])
-    # devise_parameter_sanitizer.permit(:account_update, keys: [:username, :email, :password, :current_password])
-    devise_parameter_sanitizer.permit(:sign_in, keys: [:username])
+    devise_parameter_sanitizer.permit(:sign_in, keys: [:username, :password])
   end
 
-  # Redirect to user's dashboard after signing in or signing up
+  # Redirect to user's or admin's dashboard after signing in or signing up
   def after_sign_in_path_for(resource)
-    if resource.is_a?(Admin)
+    if resource.is_a?(Admin) # Assuming `Admin` is your admin model
       admin_root_path
     else
       user_dashboard_path
@@ -28,6 +27,10 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_up_path_for(resource)
-    user_dashboard_path
+    if resource.is_a?(Admin) # Assuming `Admin` is your admin model
+      admin_root_path
+    else
+      user_dashboard_path
+    end
   end
 end

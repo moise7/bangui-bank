@@ -49,6 +49,12 @@ Devise.setup do |config|
   # config.authentication_keys = [:email]
   config.jwt do |jwt|
     jwt.secret = Rails.application.credentials.devise[:jwt_secret_key]
+    jwt.dispatch_requests = [
+      ['POST', %r{^/api/v1/sign_in$}]
+    ]
+    jwt.revocation_requests = [
+      ['DELETE', %r{^/api/v1/sign_out$}]
+    ]
   end
   # Configure parameters from the request object used for authentication. Each entry
   # given should be a request method and it will automatically be passed to the

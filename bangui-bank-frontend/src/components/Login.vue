@@ -30,44 +30,60 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { ref } from 'vue'; // Import ref from vue
+import { useUserStore } from '@/stores/user'; // Import the Pinia store
+import { useRouter } from 'vue-router'; // Import useRouter
 
 export default {
   name: "Login",
-  data() {
-    return {
-      loginUsername: "",
-      loginPassword: "",
-      loginError: null,
-    };
-  },
-  computed: {
-    ...mapGetters(["isLoggedIn"]),
-  },
-  methods: {
-    ...mapActions(["loginUser"]),
-    async onLogin(event) {
+  setup() {
+    const userStore = useUserStore(); // Initialize the Pinia store
+    const router = useRouter(); // Initialize the router
+
+    // Define reactive state using ref
+    const loginUsername = ref("");
+    const loginPassword = ref("");
+    const loginError = ref(null);
+
+    // Handle login form submission
+    const onLogin = async (event) => {
       event.preventDefault();
       const data = {
-        username: this.loginUsername, // Use username here
-        password: this.loginPassword,
+        username: loginUsername.value,
+        password: loginPassword.value,
       };
 
       try {
-        const response = await this.loginUser(data);
-
-        if (response.status === 200) {
-          this.$router.push("/dashboard"); // Redirect on success
+        await userStore.loginUser(data);
+        // Check if user is authenticated
+        if (userStore.isAuthenticated) {
+          // Ensure user data is available
+          if (userStore.user && userStore.user.id) {
+            router.push(`/dashboard/${userStore.user.id}`); // Redirect on success
+          } else {
+            loginError.value = "User data is not available.";
+          }
         } else {
-          this.loginError = "Login failed. Please check your username and password.";
+          loginError.value = "Login failed. Please check your username and password.";
         }
       } catch (error) {
-        this.loginError = "There was an error logging in. Please try again.";
+        // Log the error and display a user-friendly message
+        console.error('Login error:', error.response ? error.response.data : error.message);
+        loginError.value = "There was an error logging in. Please try again.";
       }
-    },
+    };
+
+    return {
+      loginUsername,
+      loginPassword,
+      loginError,
+      onLogin,
+    };
   },
 };
 </script>
+
+
 
 <style scoped>
 .login {

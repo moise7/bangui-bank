@@ -34,19 +34,21 @@ Rails.application.routes.draw do
     namespace :v1 do
       # Custom routes for sessions and users
       get 'user_data', to: 'users#user_data'
-      post 'sessions', to: 'sessions#create'
-      delete 'sessions', to: 'sessions#destroy'
-      resources :users, only: [:user_data, :create, :update, :destroy]
-      post 'sign_up', to: 'users#sign_up'
 
-      # Devise routes for API
-      devise_scope :user do
-        post 'sign_in', to: 'sessions#create'
-        delete 'sign_out', to: 'sessions#destroy'
-        post 'sign_up', to: 'registrations#create'
-      end
+      # Route for sign-in handled by the sessions controller
+      post 'sign_in', to: 'sessions#create'
+
+      # Route for sign-out handled by the sessions controller
+      delete 'sign_out', to: 'sessions#destroy'
+
+      # Route for sign-up handled by the registrations controller
+      post 'sign_up', to: 'registrations#create'
+
+      # Only define necessary RESTful routes for users
+      resources :users, only: [:index, :create, :update, :destroy]
     end
   end
+
 
 
   # Define other routes

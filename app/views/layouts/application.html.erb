@@ -1,13 +1,12 @@
-<%# app/views/layouts/application.html.erb %>
 <!DOCTYPE html>
 <html>
 <head>
   <title>MyApp</title>
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  <%= stylesheet_link_tag 'application', 'data-turbo-track': 'reload', media: 'all' %>
+  <%= javascript_include_tag 'application', 'data-turbo-track': 'reload' %>
+  <%= stylesheet_pack_tag 'application', 'data-turbo-track': 'reload', media: 'all' %>
   <%= javascript_pack_tag 'application' %>
-    <%= javascript_importmap_tags %>
 </head>
 <body>
   <% flash.each do |key, value| %>

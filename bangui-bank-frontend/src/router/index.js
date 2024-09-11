@@ -10,8 +10,8 @@ const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
   { path: '/signup', component: Signup },
-  { path: '/dashboard', component: Dashboard },
-  { path: '/transfer-form', component: TransferForm }, // Add the route for Send Money
+  { path: '/dashboard/:userId', component: Dashboard }, // Fixed the dynamic userId param
+  { path: '/transfer-form', component: TransferForm }, // Route for Send Money
 ];
 
 const router = createRouter({

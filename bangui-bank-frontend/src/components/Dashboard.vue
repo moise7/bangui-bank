@@ -7,48 +7,31 @@
     </nav>
 
     <div class="dashboard-content">
-      <!-- User Information Section -->
-
-      <div class="user-info-section" v-if="userProfile">
-        <h2>User Information</h2>
-        <p><strong>Name:</strong> {{ userProfile.name }}</p>
-        <p><strong>Email:</strong> {{ userProfile.email }}</p>
-        <p><strong>Username:</strong> {{ userProfile.username }}</p>
-        <p><strong>Created At:</strong> {{ new Date(userProfile.created_at).toLocaleDateString() }}</p>
-      </div>
       <!-- Accounts Section -->
-      <div class="accounts-section">
-        <h2>Accounts</h2>
-        <div class="account-info">
-          <div class="user-info" v-if="user">
-            <p><strong>Available Balance:</strong> ${{ user.balance }}</p>
-            <p><strong>Created At:</strong> {{ new Date(user.created_at).toLocaleDateString() }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Username:</strong> {{ user.username }}</p>
-          </div>
-          <router-link to="/transfer-form" class="make-transfer">Make a Transfer</router-link>
-        </div>
-        <div class="account-actions">
-          <h3>Make Transfer</h3>
-          <router-link to="/transfer-form" class="btn-transfer">Send Money</router-link>
-          <button class="btn-settings">Settings</button>
-        </div>
-        <div class="connected-accounts">
-          <h3>Connected Accounts</h3>
-          <a href="#" class="open-account">Open a Deposit Account</a>
-        </div>
+      <div class="accounts-section" v-if="userStore.user && userStore.user.username">
+        <h2>User Information</h2>
+        <p><strong>Name:</strong> {{ userStore.user.username }}</p>
+        <p><strong>Available Balance</strong> {{ userStore.user.balance }}</p>
+        <p><strong>Created At:</strong> {{ new Date(userStore.user.created_at).toLocaleDateString() }}</p>
+      </div>
+      <router-link to="/transfer-form" class="make-transfer">Make a Transfer</router-link>
 
-        <!-- Payment History Section -->
-        <div class="payment-history">
-          <h3>Payment History</h3>
-          <ul class="payment-list">
-            <li v-for="payment in payments" :key="payment.id">
-              <div class="payment-date">{{ payment.date }}</div>
-              <div class="payment-description">{{ payment.description }}</div>
-              <div class="payment-amount">{{ payment.amount }}</div>
-            </li>
-          </ul>
-        </div>
+      <div class="account-actions">
+        <h3>Make Transfer</h3>
+        <router-link to="/transfer-form" class="btn-transfer">Send Money</router-link>
+        <button class="btn-settings">Settings</button>
+      </div>
+
+      <!-- Payment History Section -->
+      <div class="payment-history">
+        <h3>Payment History</h3>
+        <ul class="payment-list">
+          <li v-for="payment in payments" :key="payment.id">
+            <div class="payment-date">{{ payment.date }}</div>
+            <div class="payment-description">{{ payment.description }}</div>
+            <div class="payment-amount">{{ payment.amount }}</div>
+          </li>
+        </ul>
       </div>
 
       <!-- Payment Section -->
@@ -90,7 +73,7 @@
           <div class="calendar-grid">
             <div v-for="day in daysOfWeek" :key="day" class="calendar-day-header">{{ day }}</div>
             <div v-for="date in calendarDates" :key="date.getTime()"
-                 :class="['calendar-day', { 'current-month': isCurrentMonth(date), 'today': isToday(date) }]">
+                  :class="['calendar-day', { 'current-month': isCurrentMonth(date), 'today': isToday(date) }]">
               {{ date.getDate() }}
             </div>
           </div>
@@ -99,59 +82,60 @@
     </div>
   </div>
 </template>
+
 <script>
-import axios from 'axios';
-import { ref, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { onMounted } from 'vue';
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'BankingDashboard',
+  data() {
+    return {
+      navItems: ['Accounts', 'Move Money', 'Financial Tools', 'Card Control', 'Send Money', 'Additional Services', 'Logout'],
+      currentDate: new Date(),
+      daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+      calculatorButtons: ['C', '±', '%', '÷', '7', '8', '9', '×', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='],
+      payments: [
+        { id: 1, date: '2024-08-01', description: 'Electric Bill', amount: '-$120.45' },
+        { id: 2, date: '2024-07-28', description: 'Internet Bill', amount: '-$60.00' },
+        { id: 3, date: '2024-07-15', description: 'Phone Bill', amount: '-$30.00' },
+        // Add more payments as needed
+      ],
+      user: null, // Data property for user information
+    }
+  },
   setup() {
+    const userStore = useUserStore();
     const router = useRouter();
-    const route = useRoute();
-
     const navItems = ['Accounts', 'Move Money', 'Financial Tools', 'Card Control', 'Send Money', 'Additional Services', 'Logout'];
-    const currentDate = ref(new Date());
-    const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-    const calculatorButtons = ['C', '±', '%', '÷', '7', '8', '9', '×', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='];
-    const payments = ref([
-      { id: 1, date: '2024-08-01', description: 'Electric Bill', amount: '-$120.45' },
-      { id: 2, date: '2024-07-28', description: 'Internet Bill', amount: '-$60.00' },
-      { id: 3, date: '2024-07-15', description: 'Phone Bill', amount: '-$30.00' },
-      // Add more payments as needed
-    ]);
-    const user = ref(null);
 
-    const fetchUserData = async () => {
-      const userId = route.params.userId;
-      console.log(userId)
-      if (!userId) {
-        console.error('User ID is required');
-        return;
-      }
-      try {
-        const response = await axios.get(`/api/v1/user_data/${userId}`);
-        user.value = response.data;
-      } catch (error) {
-        console.error('Failed to fetch user data:', error);
-      }
-    };
-
-    const handleNavClick = (item) => {
+    function handleNavClick(item) {
       if (item === 'Logout') {
-        router.push('/');
+        userStore.logout(); // Call the logout method
+        router.push('/'); // Redirect to the home page
       } else if (item === 'Send Money') {
-        router.push('/transfer-form'); // Ensure this matches your route
+        router.push('/send-money');
       }
-    };
+    }
 
-    const currentMonthYear = computed(() => {
-      return currentDate.value.toLocaleString('default', { month: 'long', year: 'numeric' });
+    onMounted(async () => {
+      await userStore.fetchUserData();
     });
 
-    const calendarDates = computed(() => {
-      const year = currentDate.value.getFullYear();
-      const month = currentDate.value.getMonth();
+    return {
+      userStore,
+      handleNavClick,
+      navItems,
+    };
+  },
+  computed: {
+    currentMonthYear() {
+      return this.currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+    },
+    calendarDates() {
+      const year = this.currentDate.getFullYear();
+      const month = this.currentDate.getMonth();
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
 
@@ -164,29 +148,26 @@ export default {
       }
 
       return dates;
-    });
-
-    const previousMonth = () => {
-      currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1);
-    };
-
-    const nextMonth = () => {
-      currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1);
-    };
-
-    const isCurrentMonth = (date) => {
-      return date.getMonth() === currentDate.value.getMonth();
-    };
-
-    const isToday = (date) => {
+    }
+  },
+  methods: {
+    previousMonth() {
+      this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1);
+    },
+    nextMonth() {
+      this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1);
+    },
+    isCurrentMonth(date) {
+      return date.getMonth() === this.currentDate.getMonth();
+    },
+    isToday(date) {
       const today = new Date();
       return date.getDate() === today.getDate() &&
              date.getMonth() === today.getMonth() &&
              date.getFullYear() === today.getFullYear();
-    };
-
-    const handleCalculatorButtonClick = (button) => {
-      const display = document.querySelector('.calculator-display');
+    },
+    handleCalculatorButtonClick(button) {
+      const display = this.$refs.calculatorDisplay;
       let currentText = display.innerText;
 
       if (button === 'C') {
@@ -204,32 +185,10 @@ export default {
           display.innerText += button;
         }
       }
-    };
-
-    onMounted(() => {
-      fetchUserData();
-    });
-
-    return {
-      navItems,
-      currentDate,
-      daysOfWeek,
-      calculatorButtons,
-      payments,
-      user,
-      handleNavClick,
-      currentMonthYear,
-      calendarDates,
-      previousMonth,
-      nextMonth,
-      isCurrentMonth,
-      isToday,
-      handleCalculatorButtonClick
-    };
-  }
+    }
+  },
 };
 </script>
-
 
 <style scoped>
 .dashboard {

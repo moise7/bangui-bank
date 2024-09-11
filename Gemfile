@@ -55,4 +55,5 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'webpacker'
 gem "cssbundling-rails", "~> 1.4"
 gem 'importmap-rails'
+gem 'jwt_sessions', '~> 2.6'
 

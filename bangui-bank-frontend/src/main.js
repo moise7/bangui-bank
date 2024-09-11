@@ -1,17 +1,12 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import store from './stores';
+import { createPinia } from 'pinia'; // Import Pinia
 import './index.css'
 
-let localAuthToken = localStorage.auth_token;
-let cookieExists = localAuthToken !== "undefined" && localAuthToken !== null;
-if (cookieExists) {
-  const auth_token = localStorage.getItem("auth_token");
-  const authTokenExists = auth_token !== "undefined" && auth_token !== null;
-  if (authTokenExists) {
-    store.dispatch("loginUserWithToken", { auth_token });
-  }
-}
+const app = createApp(App);
+const pinia = createPinia(); // Create Pinia instance
 
-createApp(App).use(router).use(store).mount('#app');
+app.use(router);
+app.use(pinia); // Use Pinia instance
+app.mount('#app');

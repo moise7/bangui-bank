@@ -1,29 +1,31 @@
+# app/controllers/api/v1/sessions_controller.rb
 class Api::V1::SessionsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def create
-    Rails.logger.debug "Received params: #{params.inspect}"
-
-    # Change user lookup to use username instead of email
     user = User.find_by(username: session_params[:username])
 
-    if user&.valid_password?(session_params[:password])
-      token = generate_token(user)
+    if user && user.valid_password?(session_params[:password])
+      jti = SecureRandom.uuid  # Generate a unique identifier for the JWT
+      token = JwtService.encode(user_id: user.id, jti: jti) # Include the new jti in the token
+
+      # Update the user's jti in the database
+      user.update(jti: jti)
+
       render json: { user: user.as_json(only: [:id, :username]), token: token }, status: :ok
     else
       render json: { error: 'Invalid username or password' }, status: :unauthorized
     end
   end
 
+  def destroy
+    # Handle the logout process if required
+    head :no_content
+  end
+
   private
 
   def session_params
-    # Adjust the params to permit the username instead of email
-    params.permit(:username, :password)
-  end
-
-  def generate_token(user)
-    # Ensure this method generates a valid JWT token
-    JwtService.encode(user_id: user.id)
+    params.require(:user).permit(:username, :password)
   end
 end

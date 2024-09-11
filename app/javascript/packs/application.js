@@ -18,5 +18,5 @@
 import Rails from "@rails/ujs";
 Rails.start();
 
-
+import '../stylesheets/application.scss'; // Adjust path as needed
 console.log('Hello World from Webpacker')
