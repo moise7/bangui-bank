@@ -5,23 +5,16 @@
         {{ item }}
       </a>
     </nav>
+    <div class="title text-3xl text-center" v-if="userStore.user && userStore.user.username">
+      <h1><strong>Bievenue,</strong> {{ userStore.user.first_name }}</h1>
+    </div>
 
+    <!-- Accounts Section -->
+    <div class="accounts-section" v-if="userStore.user && userStore.user.username">
+          <p><strong>Available Balance</strong> {{ userStore.user.balance }}</p>
+          <p><strong>Created At:</strong> {{ new Date(userStore.user.created_at).toLocaleDateString() }}</p>
+        </div>
     <div class="dashboard-content">
-      <!-- Accounts Section -->
-      <div class="accounts-section" v-if="userStore.user && userStore.user.username">
-        <h2>User Information</h2>
-        <h1><strong>Welcome,</strong> {{ userStore.user.first_name }}</h1>
-        <p><strong>Available Balance</strong> {{ userStore.user.balance }}</p>
-        <p><strong>Created At:</strong> {{ new Date(userStore.user.created_at).toLocaleDateString() }}</p>
-      </div>
-      <router-link to="/transfer-form" class="make-transfer">Make a Transfer</router-link>
-
-      <div class="account-actions">
-        <h3>Make Transfer</h3>
-        <router-link to="/transfer-form" class="btn-transfer">Send Money</router-link>
-        <button class="btn-settings">Settings</button>
-      </div>
-
       <!-- Payment History Section -->
       <div class="payment-history">
         <h3>Payment History</h3>
@@ -32,25 +25,6 @@
             <div class="payment-amount">{{ payment.amount }}</div>
           </li>
         </ul>
-      </div>
-
-      <!-- Payment Section -->
-      <div class="payment-section">
-        <h2>Make a Payment</h2>
-        <p>Make paying bills fast and easy</p>
-        <p>Pay your bills on one screen in seconds.</p>
-        <button class="btn-signup">Sign up for payments</button>
-      </div>
-
-      <!-- Money Management Section -->
-      <div class="money-management">
-        <h2>Money Management</h2>
-        <div class="tabs">
-          <button class="active">Budgets</button>
-          <button>Spending</button>
-        </div>
-        <!-- Placeholder for budget/spending visualization -->
-        <div class="visualization-placeholder"></div>
       </div>
 
       <!-- Calculator and Calendar Section -->
@@ -115,7 +89,7 @@ export default {
         userStore.logout(); // Call the logout method
         router.push('/'); // Redirect to the home page
       } else if (item === 'Send Money') {
-        router.push('/send-money');
+        router.push('/transfer-form');
       }
     }
 
@@ -208,6 +182,9 @@ export default {
   cursor: pointer;
 }
 
+.title {
+  padding: 20px;
+}
 .dashboard-content {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -216,22 +193,20 @@ export default {
 }
 
 .accounts-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  padding: 20px;
   background-color: #f8f8f8;
-  padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  margin: 0 20px; /* Add margin: 0 top/bottom and 40px left/right */
 }
 
-.account-actions {
-  margin-bottom: 15px;
-}
 
 .payment-history {
-  margin-top: 20px;
+  /* margin-top: 20px; */
   background-color: #f8f8f8;
   padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 8px;
 }
 
 .payment-history h3 {

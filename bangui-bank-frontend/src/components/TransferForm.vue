@@ -59,7 +59,7 @@ export default {
 
     // Method to go to dashboard
     const goToDashboard = () => {
-      router.push('/dashboard');
+      router.push(`/dashboard/${userStore.userId}`);
     };
 
     // Return reactive properties and methods
