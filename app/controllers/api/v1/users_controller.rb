@@ -8,6 +8,12 @@ class Api::V1::UsersController < ApplicationController
       render json: {
         user: {
           email: @current_user.email,
+          first_name: @current_user.first_name,
+          middle_name: @current_user.middle_name,
+          last_name: @current_user.last_name,
+          date_of_birth: @current_user.date_of_birth,
+          town: @current_user.town,
+          country: @current_user.country,
           created_at: @current_user.created_at,
           username: @current_user.username,
           balance: formatted_balance
@@ -48,4 +54,3 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 end
-

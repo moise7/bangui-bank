@@ -1,25 +1,29 @@
-class TransactionsController < ApplicationController
-  before_action :authenticate_user!
+class Api::V1::TransactionsController < ApplicationController
+  before_action :authenticate_user! # Ensure the user is authenticated
 
   def create
+    sender = current_user
     receiver = User.find_by(email: transaction_params[:receiver_email])
+
     if receiver.nil?
-      render json: { error: "Receiver not found" }, status: :not_found
-      return
+      return render json: { error: 'Receiver not found' }, status: :not_found
     end
 
-    # Log the sender's balance for debugging
-    Rails.logger.info "Transferring #{transaction_params[:amount]} from #{current_user.email} (balance: #{current_user.balance}) to #{receiver.email} (balance: #{receiver.balance})"
-
-    begin
-      current_user.transfer_money_to(receiver, transaction_params[:amount].to_d)
-      render json: { message: "Transfer successful" }, status: :ok
-    rescue StandardError => e
-      render json: { error: e.message }, status: :unprocessable_entity
+    if sender.balance < transaction_params[:amount].to_f
+      return render json: { error: 'Insufficient funds' }, status: :unprocessable_entity
     end
+
+    ActiveRecord::Base.transaction do
+      # Deduct the amount from the sender's balance
+      sender.update!(balance: sender.balance - transaction_params[:amount].to_f)
+      # Add the amount to the receiver's balance
+      receiver.update!(balance: receiver.balance + transaction_params[:amount].to_f)
+    end
+
+    render json: { message: 'Transaction successful' }, status: :ok
+  rescue StandardError => e
+    render json: { error: e.message }, status: :unprocessable_entity
   end
-
-
 
   private
 

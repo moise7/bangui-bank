@@ -13,7 +13,9 @@ class ApplicationController < ActionController::Base
 
   # Permit additional parameters for user sign-up and account update
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:username, :email, :password])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :middle_name, :last_name, :date_of_birth, :town, :country, :password, :password_confirmation])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:first_name, :middle_name, :last_name, :date_of_birth, :town, :country, :password, :password_confirmation, :current_password])
+
     devise_parameter_sanitizer.permit(:sign_in, keys: [:username, :password])
   end
 
@@ -31,6 +33,20 @@ class ApplicationController < ActionController::Base
       admin_root_path
     else
       user_dashboard_path
+    end
+  end
+
+   # JWT Authentication
+  def authenticate_user!
+    auth_header = request.headers['Authorization']
+    token = auth_header.split(' ').last if auth_header
+
+    begin
+      decoded_token = JwtService.decode(token)
+      @current_user = User.find_by(id: decoded_token["user_id"], jti: decoded_token["jti"])
+      render json: { error: 'Unauthorized' }, status: :unauthorized unless @current_user
+    rescue JWT::DecodeError
+      render json: { error: 'Invalid token' }, status: :unauthorized
     end
   end
 end

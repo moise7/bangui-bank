@@ -55,6 +55,7 @@ Devise.setup do |config|
     jwt.revocation_requests = [
       ['DELETE', %r{^/api/v1/sign_out$}]
     ]
+    jwt.expiration_time = 24.hours.to_i
   end
   # Configure parameters from the request object used for authentication. Each entry
   # given should be a request method and it will automatically be passed to the

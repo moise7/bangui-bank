@@ -35,21 +35,22 @@ Rails.application.routes.draw do
       # Custom routes for sessions and users
       get 'user_data', to: 'users#user_data'
 
-      # Route for sign-in handled by the sessions controller
-      post 'sign_in', to: 'sessions#create'
-
-      # Route for sign-out handled by the sessions controller
-      delete 'sign_out', to: 'sessions#destroy'
-
-      # Route for sign-up handled by the registrations controller
-      post 'sign_up', to: 'registrations#create'
+      devise_scope :user do
+        # Route for sign-in handled by the sessions controller
+        post 'sign_in', to: 'sessions#create'
+        # Route for sign-out handled by the sessions controller
+        delete 'sign_out', to: 'sessions#destroy'
+        # Route for sign-up handled by the registrations controller
+        post 'sign_up', to: 'registrations#create'
+      end
 
       # Only define necessary RESTful routes for users
       resources :users, only: [:index, :create, :update, :destroy]
+
+      # Define route for transactions
+      resources :transactions, only: [:create] # Assuming you want to list and create transactions
     end
   end
-
-
 
   # Define other routes
   get '/member-data', to: 'members#show'

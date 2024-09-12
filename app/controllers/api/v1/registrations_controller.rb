@@ -3,7 +3,6 @@ class Api::V1::RegistrationsController < Devise::RegistrationsController
 
   def create
     user = User.new(sign_up_params)
-
     if user.save
       token = JwtService.encode(user_id: user.id)
       render json: { user: user.as_json(only: [:id, :username]), token: token }, status: :created
@@ -15,6 +14,6 @@ class Api::V1::RegistrationsController < Devise::RegistrationsController
   private
 
   def sign_up_params
-    params.require(:user).permit(:username, :email, :password, :password_confirmation)
+     params.require(:user).permit(:username, :email, :password, :password_confirmation, :first_name, :middle_name, :last_name, :date_of_birth, :town, :country)
   end
 end

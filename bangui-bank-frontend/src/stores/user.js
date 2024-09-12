@@ -25,6 +25,18 @@ export const useUserStore = defineStore('user', {
         console.error('Login failed:', error.response ? error.response.data : error.message);
       }
     },
+    async registerUser(userData) {
+      try {
+        const response = await axios.post('http://localhost:3000/api/v1/sign_up', userData);
+        this.user = response.data.user;
+        this.token = response.data.token;
+        this.userId = response.data.user.id; // Store user ID
+        localStorage.setItem('token', this.token);
+        localStorage.setItem('userId', this.userId); // Persist user ID
+      } catch (error) {
+        console.error('Registration failed:', error.response ? error.response.data : error.message);
+      }
+    },
     async fetchUserData() {
       if (!this.token || !this.userId) {
         console.error('No token or user ID found, please login');

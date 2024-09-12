@@ -1,54 +1,5 @@
-# class User < ApplicationRecord
-#   # Include default devise modules. Others available are:
-#   # :confirmable, :lockable, :timeoutable, :trackable, :omniauthable
-#   devise :database_authenticatable, :registerable,
-#          :recoverable, :rememberable, :validatable,
-#          :jwt_authenticatable, authentication_keys: [:username],
-#          jwt_revocation_strategy: JwtDenylist
-
-#   # Add username validation
-#   validates :username, presence: true, uniqueness: true
-
-#   # Associations
-#   has_many :sent_bank_transactions, class_name: 'BankTransaction', foreign_key: 'sender_id'
-#   has_many :received_bank_transactions, class_name: 'BankTransaction', foreign_key: 'receiver_id'
-
-#   # Validations
-#   validates :balance, presence: true, numericality: { greater_than_or_equal_to: 0 }
-
-#   # Ensure a jti is generated for JWT authentication
-#   before_create :generate_jti
-
-#   # Transfer money to another user
-#   def transfer_money_to(receiver, amount)
-#     raise "Insufficient funds" if balance < amount
-
-#     ActiveRecord::Base.transaction do
-#       update!(balance: balance - amount)
-#       receiver.update!(balance: receiver.balance + amount)
-#       Transaction.create!(sender_id: id, receiver_id: receiver.id, amount: amount)
-#       send_notification_to(receiver, amount)
-#     end
-#   end
-
-#   # Add a method to deposit funds
-#   def deposit(amount)
-#     raise "Amount must be positive" if amount <= 0
-#     update!(balance: balance + amount)
-#   end
-
-#   private
-
-#   def send_notification_to(user, amount)
-#     TwilioClient.new.send_message(user.phone_number, "You've received $#{amount} from #{email}")
-#   end
-
-#   def generate_jti
-#     self.jti ||= SecureRandom.uuid
-#   end
-# end
-
 class User < ApplicationRecord
+  has_many :transactions
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable, :omniauthable
   devise :database_authenticatable, :registerable,
@@ -56,6 +7,8 @@ class User < ApplicationRecord
          :jwt_authenticatable, authentication_keys: [:username],
          jwt_revocation_strategy: JwtDenylist
 
+  # Validations
+  validates :first_name, :middle_name, :last_name, :date_of_birth, :town, :country, presence: true
   # Add username validation
   validates :username, presence: true, uniqueness: true
 
@@ -74,6 +27,25 @@ class User < ApplicationRecord
   def deposit(amount)
     raise "Amount must be positive" if amount <= 0
     update!(balance: balance + amount)
+  end
+
+  def transfer_money_to(receiver, amount)
+    ActiveRecord::Base.transaction do
+      # Deduct from sender
+      self.balance -= amount
+      save!
+
+      # Add to receiver
+      receiver.balance += amount
+      receiver.save!
+
+      # Create transaction record (optional)
+      Transaction.create!(
+        sender_id: self.id,
+        receiver_id: receiver.id,
+        amount: amount
+      )
+    end
   end
 
   private

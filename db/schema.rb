@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_04_152522) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_11_180156) do
   create_table "admins", force: :cascade do |t|
     t.string "email"
     t.string "encrypted_password"
@@ -59,6 +59,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_04_152522) do
     t.boolean "password_reset_required"
     t.decimal "balance", precision: 15, scale: 2, default: "0.0"
     t.string "jti"
+    t.string "first_name", default: "", null: false
+    t.string "middle_name", default: "", null: false
+    t.string "last_name", default: "", null: false
+    t.date "date_of_birth", default: "", null: false
+    t.string "town", default: "", null: false
+    t.string "country", default: "", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

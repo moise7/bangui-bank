@@ -10,7 +10,7 @@
       <!-- Accounts Section -->
       <div class="accounts-section" v-if="userStore.user && userStore.user.username">
         <h2>User Information</h2>
-        <p><strong>Name:</strong> {{ userStore.user.username }}</p>
+        <h1><strong>Welcome,</strong> {{ userStore.user.first_name }}</h1>
         <p><strong>Available Balance</strong> {{ userStore.user.balance }}</p>
         <p><strong>Created At:</strong> {{ new Date(userStore.user.created_at).toLocaleDateString() }}</p>
       </div>

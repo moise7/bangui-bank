@@ -1,7 +1,8 @@
 module.exports = {
-  presets: ['@babel/preset-env'],
+  presets: [
+    '@vue/cli-plugin-babel/preset'
+  ],
   plugins: [
-    '@babel/plugin-proposal-private-methods',
     '@babel/plugin-proposal-private-property-in-object'
   ]
-};
+}

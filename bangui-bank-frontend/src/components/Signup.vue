@@ -5,86 +5,172 @@
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="text"
+        v-model="signUpFirstName"
+        placeholder="First Name"
+        required
+      />
+      <input
+        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        type="text"
+        v-model="signUpMiddleName"
+        placeholder="Middle Name"
+      />
+      <input
+        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        type="text"
+        v-model="signUpLastName"
+        placeholder="Last Name"
+        required
+      />
+      <input
+        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        type="date"
+        v-model="signUpDateOfBirth"
+        placeholder="Date of Birth"
+        required
+      />
+      <input
+        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        type="text"
+        v-model="signUpTown"
+        placeholder="Town"
+      />
+      <input
+        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        type="text"
+        v-model="signUpCountry"
+        placeholder="Country"
+      />
+      <input
+        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        type="text"
         v-model="signUpUsername"
         placeholder="Username"
+        required
       />
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="email"
         v-model="signUpEmail"
         placeholder="Email"
+        required
       />
       <input
         type="password"
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         v-model="signUpPassword"
         placeholder="Password"
+        required
+      />
+      <input
+        type="password"
+        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        v-model="signUpPasswordConfirmation"
+        placeholder="Confirm Password"
+        required
       />
       <input
         type="submit"
-        value="Sign up"
+        value="Sign Up"
         class="w-full py-3 bg-blue-600 text-white rounded hover:bg-blue-500 cursor-pointer"
       />
     </form>
-    <p class="text-orange-500 mt-4">You can change your preferred name later in your profile</p>
+    <p class="text-orange-500 mt-4">You can update your details later in your profile</p>
     <a href="/login" class="text-blue-600 hover:underline mt-2">Already have an account?</a>
   </div>
 </template>
 
 <script>
-import "@/stores/index.js";
-import { mapActions, mapGetters } from "vuex";
+import { ref } from 'vue';
+import { useUserStore } from '@/stores/user'; // Import Pinia store
+import { useRouter } from 'vue-router'; // Import useRouter
+
 export default {
-  name: "SessionManager",
-  computed: {
-      ...mapGetters(["getAuthToken", "getUserEmail", "getUsername", "getUserID", "isLoggedIn"]),
-  },
-  data() {
-      return {
-      signUpUsername: "",
-      signUpEmail: "",
-      signUpPassword: "",
-      loginUsername: "",
-      loginPassword: "",
+  name: 'SignUpForm',
+  setup() {
+    const userStore = useUserStore();
+    const router = useRouter(); // Use router
+
+    // Define reactive variables
+    const signUpFirstName = ref("");
+    const signUpMiddleName = ref("");
+    const signUpLastName = ref("");
+    const signUpDateOfBirth = ref("");
+    const signUpTown = ref("");
+    const signUpCountry = ref("");
+    const signUpUsername = ref("");
+    const signUpEmail = ref("");
+    const signUpPassword = ref("");
+    const signUpPasswordConfirmation = ref("");
+
+    const onSignUp = async (event) => {
+      event.preventDefault();
+
+      const data = {
+        user: {
+          first_name: signUpFirstName.value,
+          middle_name: signUpMiddleName.value,
+          last_name: signUpLastName.value,
+          date_of_birth: signUpDateOfBirth.value,
+          town: signUpTown.value,
+          country: signUpCountry.value,
+          username: signUpUsername.value,
+          email: signUpEmail.value,
+          password: signUpPassword.value,
+          password_confirmation: signUpPasswordConfirmation.value,
+        },
       };
-  },
-  methods: {
-  ...mapActions(["registerUser", "loginUser", "logoutUser"]),
-  async onSignUp(event) {
-    event.preventDefault();
-    let data = {
-      user: {
-        username: this.signUpUsername,
-        email: this.signUpEmail,
-        password: this.signUpPassword,
-      },
+
+      try {
+        await userStore.registerUser(data);
+        resetData();
+
+        // Check if the user is successfully logged in
+        if (userStore.isAuthenticated) {
+          // Redirect to the Dashboard
+          if (userStore.user && userStore.user.id) {
+            router.push(`/dashboard/${userStore.user.id}`);
+          } else {
+            loginError.value = "User data is not available.";
+          } // Use router.push instead of this.$router.push
+        } else {
+          // Handle the case where signup did not result in a successful login
+          alert('Signup failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Signup error:', error);
+        alert('There was an error signing up. Please try again.');
+      }
     };
 
-    try {
-      await this.registerUser(data);
-      this.resetData();
+    const resetData = () => {
+      signUpFirstName.value = '';
+      signUpMiddleName.value = '';
+      signUpLastName.value = '';
+      signUpDateOfBirth.value = '';
+      signUpTown.value = '';
+      signUpCountry.value = '';
+      signUpUsername.value = '';
+      signUpEmail.value = '';
+      signUpPassword.value = '';
+      signUpPasswordConfirmation.value = '';
+    };
 
-      // Check if the user is successfully logged in (if the login state changes after signup)
-      if (this.isLoggedIn) {
-        // Redirect to the Dashboard
-        this.$router.push('/dashboard');
-      } else {
-        // Handle the case where signup did not result in a successful login
-        alert('Signup failed. Please try again.');
-      }
-    } catch (error) {
-      console.error('Signup error:', error);
-      alert('There was an error signing up. Please try again.');
-    }
+    return {
+      signUpFirstName,
+      signUpMiddleName,
+      signUpLastName,
+      signUpDateOfBirth,
+      signUpTown,
+      signUpCountry,
+      signUpUsername,
+      signUpEmail,
+      signUpPassword,
+      signUpPasswordConfirmation,
+      onSignUp,
+      resetData,
+    };
   },
-  resetData() {
-    this.signUpUsername = "";
-    this.signUpEmail = "";
-    this.signUpPassword = "";
-    this.loginUsername = "";
-    this.loginEmail = "";
-    this.loginPassword = "";
-  },
-}
-}
+};
 </script>
+
