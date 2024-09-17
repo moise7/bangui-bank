@@ -6,6 +6,7 @@ export const useUserStore = defineStore('user', {
     user: null,
     token: localStorage.getItem('token') || null,
     userId: localStorage.getItem('userId') || null, // Load user ID from localStorage
+    towns: [],
   }),
   actions: {
     async loginUser(credentials) {
@@ -51,6 +52,15 @@ export const useUserStore = defineStore('user', {
       } catch (error) {
         console.error('Failed to fetch user data:', error.response ? error.response.data : error.message);
         // Optionally handle token expiry or invalidation here
+      }
+    },
+    async fetchTowns() {
+      try {
+        const response = await axios.get('http://localhost:3000/api/v1/locations/towns'); // Replace with your actual API endpoint
+        this.towns = response.data.towns;
+      } catch (error) {
+        console.error('Error fetching towns:', error);
+        this.error = 'Failed to fetch towns. Please try again later.'; // Optional: Set an error message
       }
     },
     logout() {

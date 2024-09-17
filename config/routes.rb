@@ -34,6 +34,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       # Custom routes for sessions and users
       get 'user_data', to: 'users#user_data'
+      get 'locations/towns', to: 'locations#towns'
 
       devise_scope :user do
         # Route for sign-in handled by the sessions controller

@@ -26,18 +26,30 @@
         v-model="dateOfBirth"
         placeholder="Date of Birth"
       />
-      <input
+
+      <!-- Dropdown for Country -->
+      <select
         class="w-full p-3 mb-3 border border-gray-300 rounded"
-        type="text"
-        v-model="town"
-        placeholder="Town"
-      />
-      <input
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
-        type="text"
         v-model="country"
-        placeholder="Country"
-      />
+      >
+        <option disabled value="">Select Country</option>
+        <option value="Central Africa Republic">Central Africa Republic</option>
+        <option value="Other Country">Other Country</option>
+      </select>
+
+      <!-- Conditionally render the Town dropdown if Central Africa is selected -->
+      <div v-if="country === 'Central Africa Republic'">
+        <select
+          class="w-full p-3 mb-3 border border-gray-300 rounded"
+          v-model="town"
+        >
+          <option disabled value="">Select Town</option>
+          <option v-for="townItem in towns" :key="townItem" :value="townItem">
+            {{ townItem }}
+          </option>
+        </select>
+      </div>
+
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="text"
@@ -74,6 +86,7 @@
         class="w-full py-3 bg-blue-600 text-white rounded hover:bg-blue-500 cursor-pointer"
       />
     </form>
+
     <div v-if="signUpError" class="text-red-500 mt-4">
       {{ signUpError }}
     </div>
@@ -84,7 +97,7 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 
@@ -108,6 +121,20 @@ export default {
     const passwordConfirmation = ref("");
     const signUpError = ref(null);
 
+    // Fetch towns from Pinia store on component mount
+    onMounted(() => {
+      if (!userStore.towns.length) {
+        userStore.fetchTowns();
+      }
+    });
+
+    // Watch for changes in the selected country to reset town selection
+    watch(country, (newCountry) => {
+      if (newCountry !== 'Central Africa Republic') {
+        town.value = "";
+      }
+    });
+
     // Handle sign-up form submission
     const onSignUp = async (event) => {
       event.preventDefault();
@@ -117,7 +144,7 @@ export default {
           middle_name: middleName.value,
           last_name: lastName.value,
           date_of_birth: dateOfBirth.value,
-          town: town.value,
+          town: town.value, // Selected town
           country: country.value,
           phone_number: phoneNumber.value,
           username: username.value,
@@ -129,7 +156,6 @@ export default {
 
       try {
         await userStore.signUpUser(data);
-        console.log("Token:", userStore.token);
         if (userStore.isAuthenticated) {
           if (userStore.user && userStore.user.id) {
             router.push(`/dashboard/${userStore.user.id}`);
@@ -145,14 +171,14 @@ export default {
       }
     };
 
-
     return {
       firstName,
       middleName,
       lastName,
       dateOfBirth,
-      town,
-      country,
+      town, // Bind the selected town
+      towns: userStore.towns, // Use towns from Pinia store
+      country, // Bind country
       phoneNumber,
       username,
       email,
