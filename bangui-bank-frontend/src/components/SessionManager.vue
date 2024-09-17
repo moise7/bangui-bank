@@ -92,7 +92,7 @@ export default {
       };
   },
   methods: {
-      ...mapActions(["registerUser", "loginUser", "logoutUser"]),
+      ...mapActions(["signUpUser", "loginUser", "logoutUser"]),
       onSignUp(event) {
           event.preventDefault();
           let data = {
@@ -102,7 +102,7 @@ export default {
           password: this.signUpPassword,
           },
       };
-      this.registerUser(data);
+      this.signUpUser(data);
       this.resetData();
       },
       onLogin(event) {

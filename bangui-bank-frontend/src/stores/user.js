@@ -25,7 +25,7 @@ export const useUserStore = defineStore('user', {
         console.error('Login failed:', error.response ? error.response.data : error.message);
       }
     },
-    async registerUser(userData) {
+    async signUpUser(userData) {
       try {
         const response = await axios.post('http://localhost:3000/api/v1/sign_up', userData);
         this.user = response.data.user;

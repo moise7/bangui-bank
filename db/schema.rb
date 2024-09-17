@@ -10,21 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_11_180156) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_16_160900) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "admins", force: :cascade do |t|
-    t.string "email"
-    t.string "encrypted_password"
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at", precision: nil
+    t.datetime "last_sign_in_at", precision: nil
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
   end
 
   create_table "bank_transactions", force: :cascade do |t|
-    t.integer "sender_id"
-    t.integer "receiver_id"
+    t.bigint "sender_id"
+    t.bigint "receiver_id"
     t.decimal "amount", precision: 15, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -41,13 +49,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_11_180156) do
   end
 
   create_table "transactions", force: :cascade do |t|
-    t.decimal "amount", precision: 15, scale: 2
-    t.string "transaction_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "username", default: "", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -55,20 +62,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_11_180156) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "username"
     t.boolean "password_reset_required"
-    t.decimal "balance", precision: 15, scale: 2, default: "0.0"
-    t.string "jti"
+    t.string "jti", null: false
     t.string "first_name", default: "", null: false
     t.string "middle_name", default: "", null: false
     t.string "last_name", default: "", null: false
-    t.date "date_of_birth", default: "", null: false
+    t.date "date_of_birth"
     t.string "town", default: "", null: false
     t.string "country", default: "", null: false
+    t.string "phone_number"
+    t.decimal "balance", precision: 15, scale: 2, default: "0.0", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["jti"], name: "index_users_on_jti"
+    t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "bank_transactions", "users", column: "receiver_id"

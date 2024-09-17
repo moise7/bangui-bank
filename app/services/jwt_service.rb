@@ -1,4 +1,3 @@
-# app/services/jwt_service.rb
 class JwtService
   SECRET_KEY = Rails.application.credentials.secret_key_base
 
@@ -18,5 +17,3 @@ class JwtService
     nil
   end
 end
-
-

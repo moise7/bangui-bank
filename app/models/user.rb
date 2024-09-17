@@ -1,7 +1,8 @@
 class User < ApplicationRecord
+  # Associations
   has_many :transactions
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable, :omniauthable
+
+  # Include default devise modules.
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, authentication_keys: [:username],
@@ -9,10 +10,12 @@ class User < ApplicationRecord
 
   # Validations
   validates :first_name, :middle_name, :last_name, :date_of_birth, :town, :country, presence: true
-  # Add username validation
   validates :username, presence: true, uniqueness: true
+  validates :balance, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validate :age_must_be_18_or_older
 
-  # Ensure a jti is generated for JWT authentication
+  # Callbacks
+  before_create :set_default_balance
   before_create :generate_jti
 
   # Override this method to authenticate users using username instead of email
@@ -23,20 +26,20 @@ class User < ApplicationRecord
     end
   end
 
-  # Add a method to deposit funds (example)
+  # Method to deposit funds
   def deposit(amount)
     raise "Amount must be positive" if amount <= 0
-    update!(balance: balance + amount)
+    update!(balance: (balance || 0) + amount)
   end
 
+  # Method to transfer money
   def transfer_money_to(receiver, amount)
     ActiveRecord::Base.transaction do
-      # Deduct from sender
-      self.balance -= amount
+      raise "Insufficient funds" if balance < amount
+      self.balance = (balance || 0) - amount
       save!
 
-      # Add to receiver
-      receiver.balance += amount
+      receiver.balance = (receiver.balance || 0) + amount
       receiver.save!
 
       # Create transaction record (optional)
@@ -53,5 +56,14 @@ class User < ApplicationRecord
   def generate_jti
     self.jti ||= SecureRandom.uuid
   end
-end
 
+  def age_must_be_18_or_older
+    if date_of_birth.present? && (Date.today.year - date_of_birth.year) < 18
+      errors.add(:date_of_birth, 'You must be 18 or older to sign up.')
+    end
+  end
+
+  def set_default_balance
+    self.balance ||= 0.0
+  end
+end

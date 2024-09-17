@@ -7,7 +7,7 @@
 
 <!-- Display total users and balance -->
 <h2>Total Users: <%= @users.count %></h2>
-<h2>Total Balance: $<%= @users.sum(:balance).round(2) %></h2>
+<h2>Total Balance: $<%= @users.sum { |user| user.balance || 0.0 }.round(2) %></h2>
 
 <!-- Display recent transactions -->
 <h3>Recent Transactions</h3>
@@ -46,7 +46,7 @@
       <tr>
         <td><%= user.id %></td>
         <td><%= user.email %></td>
-        <td>$<%= user.balance %></td>
+        <td><%= number_to_currency(user.balance || 0) %></td>
         <td>
           <%= link_to 'Add Money', add_money_admin_user_path(user) %>
         </td>

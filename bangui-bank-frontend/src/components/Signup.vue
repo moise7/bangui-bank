@@ -1,73 +1,72 @@
 <template>
-  <div class="bg-gray-200 min-h-screen flex flex-col items-center justify-center p-4">
+  <div class="signup bg-gray-200 min-h-screen flex flex-col items-center justify-center p-4">
     <h3 class="text-2xl font-bold mb-4">Sign Up!</h3>
     <form @submit="onSignUp" class="w-full max-w-md">
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="text"
-        v-model="signUpFirstName"
+        v-model="firstName"
         placeholder="First Name"
-        required
       />
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="text"
-        v-model="signUpMiddleName"
+        v-model="middleName"
         placeholder="Middle Name"
       />
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="text"
-        v-model="signUpLastName"
+        v-model="lastName"
         placeholder="Last Name"
-        required
       />
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="date"
-        v-model="signUpDateOfBirth"
+        v-model="dateOfBirth"
         placeholder="Date of Birth"
-        required
       />
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="text"
-        v-model="signUpTown"
+        v-model="town"
         placeholder="Town"
       />
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="text"
-        v-model="signUpCountry"
+        v-model="country"
         placeholder="Country"
       />
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="text"
-        v-model="signUpUsername"
+        v-model="phoneNumber"
+        placeholder="Phone Number"
+      />
+      <input
+        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        type="text"
+        v-model="username"
         placeholder="Username"
-        required
       />
       <input
         class="w-full p-3 mb-3 border border-gray-300 rounded"
         type="email"
-        v-model="signUpEmail"
+        v-model="email"
         placeholder="Email"
-        required
       />
       <input
         type="password"
         class="w-full p-3 mb-3 border border-gray-300 rounded"
-        v-model="signUpPassword"
+        v-model="password"
         placeholder="Password"
-        required
       />
       <input
         type="password"
         class="w-full p-3 mb-3 border border-gray-300 rounded"
-        v-model="signUpPasswordConfirmation"
+        v-model="passwordConfirmation"
         placeholder="Confirm Password"
-        required
       />
       <input
         type="submit"
@@ -75,102 +74,93 @@
         class="w-full py-3 bg-blue-600 text-white rounded hover:bg-blue-500 cursor-pointer"
       />
     </form>
-    <p class="text-orange-500 mt-4">You can update your details later in your profile</p>
-    <a href="/login" class="text-blue-600 hover:underline mt-2">Already have an account?</a>
+    <div v-if="signUpError" class="text-red-500 mt-4">
+      {{ signUpError }}
+    </div>
+    <p class="text-blue-600 mt-4">
+      <router-link to="/login">Already have an account? Login</router-link>
+    </p>
   </div>
 </template>
 
 <script>
 import { ref } from 'vue';
-import { useUserStore } from '@/stores/user'; // Import Pinia store
-import { useRouter } from 'vue-router'; // Import useRouter
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
 
 export default {
-  name: 'SignUpForm',
+  name: "SignUp",
   setup() {
     const userStore = useUserStore();
-    const router = useRouter(); // Use router
+    const router = useRouter();
 
-    // Define reactive variables
-    const signUpFirstName = ref("");
-    const signUpMiddleName = ref("");
-    const signUpLastName = ref("");
-    const signUpDateOfBirth = ref("");
-    const signUpTown = ref("");
-    const signUpCountry = ref("");
-    const signUpUsername = ref("");
-    const signUpEmail = ref("");
-    const signUpPassword = ref("");
-    const signUpPasswordConfirmation = ref("");
+    // Define reactive state
+    const firstName = ref("");
+    const middleName = ref("");
+    const lastName = ref("");
+    const dateOfBirth = ref("");
+    const town = ref("");
+    const country = ref("");
+    const phoneNumber = ref("");
+    const username = ref("");
+    const email = ref("");
+    const password = ref("");
+    const passwordConfirmation = ref("");
+    const signUpError = ref(null);
 
+    // Handle sign-up form submission
     const onSignUp = async (event) => {
       event.preventDefault();
-
       const data = {
         user: {
-          first_name: signUpFirstName.value,
-          middle_name: signUpMiddleName.value,
-          last_name: signUpLastName.value,
-          date_of_birth: signUpDateOfBirth.value,
-          town: signUpTown.value,
-          country: signUpCountry.value,
-          username: signUpUsername.value,
-          email: signUpEmail.value,
-          password: signUpPassword.value,
-          password_confirmation: signUpPasswordConfirmation.value,
-        },
+          first_name: firstName.value,
+          middle_name: middleName.value,
+          last_name: lastName.value,
+          date_of_birth: dateOfBirth.value,
+          town: town.value,
+          country: country.value,
+          phone_number: phoneNumber.value,
+          username: username.value,
+          email: email.value,
+          password: password.value,
+          password_confirmation: passwordConfirmation.value,
+        }
       };
 
       try {
-        await userStore.registerUser(data);
-        resetData();
-
-        // Check if the user is successfully logged in
+        await userStore.signUpUser(data);
+        console.log("Token:", userStore.token);
         if (userStore.isAuthenticated) {
-          // Redirect to the Dashboard
           if (userStore.user && userStore.user.id) {
             router.push(`/dashboard/${userStore.user.id}`);
           } else {
-            loginError.value = "User data is not available.";
-          } // Use router.push instead of this.$router.push
+            signUpError.value = "User data is not available.";
+          }
         } else {
-          // Handle the case where signup did not result in a successful login
           alert('Signup failed. Please try again.');
         }
       } catch (error) {
-        console.error('Signup error:', error);
-        alert('There was an error signing up. Please try again.');
+        console.error('Sign-up error:', error.response ? error.response.data : error.message);
+        signUpError.value = "There was an error signing up. Please try again.";
       }
     };
 
-    const resetData = () => {
-      signUpFirstName.value = '';
-      signUpMiddleName.value = '';
-      signUpLastName.value = '';
-      signUpDateOfBirth.value = '';
-      signUpTown.value = '';
-      signUpCountry.value = '';
-      signUpUsername.value = '';
-      signUpEmail.value = '';
-      signUpPassword.value = '';
-      signUpPasswordConfirmation.value = '';
-    };
 
     return {
-      signUpFirstName,
-      signUpMiddleName,
-      signUpLastName,
-      signUpDateOfBirth,
-      signUpTown,
-      signUpCountry,
-      signUpUsername,
-      signUpEmail,
-      signUpPassword,
-      signUpPasswordConfirmation,
+      firstName,
+      middleName,
+      lastName,
+      dateOfBirth,
+      town,
+      country,
+      phoneNumber,
+      username,
+      email,
+      password,
+      passwordConfirmation,
+      signUpError,
       onSignUp,
-      resetData,
     };
   },
 };
 </script>
-

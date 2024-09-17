@@ -4,9 +4,9 @@
   <title>MyApp</title>
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  <%= javascript_include_tag 'application', 'data-turbo-track': 'reload' %>
+  <!-- Make sure you're loading the correct JavaScript -->
   <%= stylesheet_pack_tag 'application', 'data-turbo-track': 'reload', media: 'all' %>
-  <%= javascript_pack_tag 'application' %>
+  <%= javascript_pack_tag 'application', 'data-turbo-track': 'reload' %>
 </head>
 <body>
   <% flash.each do |key, value| %>
