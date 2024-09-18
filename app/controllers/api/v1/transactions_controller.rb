@@ -1,5 +1,5 @@
 class Api::V1::TransactionsController < ApplicationController
-  before_action :authenticate_user! # Ensure the user is authenticated
+  before_action :authenticate_user!
 
   def create
     sender = current_user
@@ -14,12 +14,10 @@ class Api::V1::TransactionsController < ApplicationController
     end
 
     ActiveRecord::Base.transaction do
-      # Deduct the amount from the sender's balance
       sender.update!(balance: sender.balance - transaction_params[:amount].to_f)
-      # Add the amount to the receiver's balance
       receiver.update!(balance: receiver.balance + transaction_params[:amount].to_f)
 
-      # Send SMS notification to the sender about the transaction
+      # Send email notification
       send_notification(sender, receiver, transaction_params[:amount].to_f)
     end
 
@@ -37,16 +35,11 @@ class Api::V1::TransactionsController < ApplicationController
   def send_notification(sender, receiver, amount)
     message = "Transaction Successful: You sent $#{amount} to #{receiver.email}. Your remaining balance is $#{sender.balance}."
 
-    # Make sure the sender has a phone number
-    if sender.phone_number.present?
-      # Twilio notification (assuming you have Twilio set up)
-      TwilioClient.messages.create(
-        from: ENV['TWILIO_PHONE_NUMBER'],  # Twilio number from your account
-        to: sender.phone_number,  # The sender's phone number
-        body: message
-      )
-    else
-      Rails.logger.warn "User #{sender.email} has no phone number. Notification not sent."
-    end
+    SendGridClient.new.send_email(
+      from: 'marketingmoise@gmail.com',
+      to: sender.email,
+      subject: 'Transaction Notification',
+      content: message
+    )
   end
 end

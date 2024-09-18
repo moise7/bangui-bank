@@ -20,6 +20,8 @@ module DeviseVue
     config.middleware.use config.session_store, config.session_options
     config.middleware.use ActionDispatch::Flash
     # config.assets.enabled = true
+    config.autoload_paths << Rails.root.join('lib')
+
 
 
     # Configuration for the application, engines, and railties goes here.

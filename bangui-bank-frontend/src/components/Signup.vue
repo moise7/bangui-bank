@@ -125,6 +125,7 @@ export default {
     onMounted(() => {
       if (!userStore.towns.length) {
         userStore.fetchTowns();
+        console.log("FetchTowns", userStore.fetchTowns())
       }
     });
 

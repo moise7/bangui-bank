@@ -8,6 +8,19 @@ Rails.application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.enable_reloading = true
 
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: 'smtp.sendgrid.net',
+    port: 587,
+    domain: 'example.com',
+    user_name: 'apikey',  # Use 'apikey' for SendGrid SMTP authentication
+    password: Rails.application.credentials.dig(:sendgrid, :api_key),
+    authentication: 'plain',
+    enable_starttls_auto: true
+  }
+
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
   # Do not eager load code on boot.
   config.eager_load = false
 
