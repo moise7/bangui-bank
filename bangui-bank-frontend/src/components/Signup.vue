@@ -1,35 +1,42 @@
 <template>
   <div class="signup bg-gray-200 min-h-screen flex flex-col items-center justify-center p-4">
-    <h3 class="text-2xl font-bold mb-4">Sign Up!</h3>
-    <form @submit="onSignUp" class="w-full max-w-md">
+    <h3 class="text-2xl font-bold mb-6">Sign Up!</h3>
+    <form @submit="onSignUp" class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+      <!-- First Name -->
       <input
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="text"
         v-model="firstName"
         placeholder="First Name"
       />
+
+      <!-- Middle Name -->
       <input
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="text"
         v-model="middleName"
         placeholder="Middle Name"
       />
+
+      <!-- Last Name -->
       <input
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="text"
         v-model="lastName"
         placeholder="Last Name"
       />
+
+      <!-- Date of Birth -->
       <input
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="date"
         v-model="dateOfBirth"
         placeholder="Date of Birth"
       />
 
-      <!-- Dropdown for Country -->
+      <!-- Country Dropdown -->
       <select
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         v-model="country"
       >
         <option disabled value="">Select Country</option>
@@ -37,10 +44,10 @@
         <option value="Other Country">Other Country</option>
       </select>
 
-      <!-- Conditionally render the Town dropdown if Central Africa is selected -->
+      <!-- Town Dropdown (if Central Africa Republic is selected) -->
       <div v-if="country === 'Central Africa Republic'">
         <select
-          class="w-full p-3 mb-3 border border-gray-300 rounded"
+          class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           v-model="town"
         >
           <option disabled value="">Select Town</option>
@@ -50,49 +57,71 @@
         </select>
       </div>
 
+      <!-- Phone Number -->
       <input
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="text"
         v-model="phoneNumber"
         placeholder="Phone Number"
       />
+
+      <!-- Username -->
       <input
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="text"
         v-model="username"
         placeholder="Username"
       />
+
+      <!-- Email -->
       <input
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="email"
         v-model="email"
         placeholder="Email"
       />
+
+      <!-- Password -->
       <input
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="password"
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
         v-model="password"
         placeholder="Password"
       />
+
+      <!-- Confirm Password -->
       <input
+        class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="password"
-        class="w-full p-3 mb-3 border border-gray-300 rounded"
         v-model="passwordConfirmation"
         placeholder="Confirm Password"
       />
-      <input
+
+      <!-- Submit Button -->
+      <button
         type="submit"
-        value="Sign Up"
-        class="w-full py-3 bg-blue-600 text-white rounded hover:bg-blue-500 cursor-pointer"
-      />
+        class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold text-lg shadow-md hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300"
+      >
+        S'inscrire
+      </button>
     </form>
 
+    <!-- Error Message -->
     <div v-if="signUpError" class="text-red-500 mt-4">
       {{ signUpError }}
     </div>
-    <p class="text-blue-600 mt-4">
-      <router-link to="/login">Already have an account? Login</router-link>
+
+    <!-- Link to Login -->
+    <p class="text-gray-600 mt-4">
+      Already have an account?
+      <router-link
+        to="/login"
+        class="text-blue-600 font-semibold hover:underline hover:text-blue-500 transition-colors duration-300"
+      >
+        Login
+      </router-link>
     </p>
+
   </div>
 </template>
 
