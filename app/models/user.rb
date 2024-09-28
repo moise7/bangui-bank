@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   # Associations
-  has_many :transactions
+  has_many :payments
 
   # Include default devise modules.
   devise :database_authenticatable, :registerable,
@@ -34,7 +34,7 @@ class User < ApplicationRecord
 
   # Method to transfer money
   def transfer_money_to(receiver, amount)
-    ActiveRecord::Base.transaction do
+    ActiveRecord::Base.payment do
       raise "Insufficient funds" if balance < amount
       self.balance = (balance || 0) - amount
       save!
@@ -42,8 +42,8 @@ class User < ApplicationRecord
       receiver.balance = (receiver.balance || 0) + amount
       receiver.save!
 
-      # Create transaction record (optional)
-      Transaction.create!(
+      # Create payment record (optional)
+      Payment.create!(
         sender_id: self.id,
         receiver_id: receiver.id,
         amount: amount

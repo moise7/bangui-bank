@@ -44,12 +44,9 @@ Rails.application.routes.draw do
         # Route for sign-up handled by the registrations controller
         post 'sign_up', to: 'registrations#create'
       end
-
+      resources :payments, only: [:index, :create]
       # Only define necessary RESTful routes for users
       resources :users, only: [:index, :create, :update, :destroy]
-
-      # Define route for transactions
-      resources :transactions, only: [:create] # Assuming you want to list and create transactions
     end
   end
 

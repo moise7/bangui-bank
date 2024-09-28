@@ -77,8 +77,8 @@ Rails.application.routes.draw do
   # User Dashboard
   get '/dashboard', to: 'dashboard#index', as: 'user_dashboard'
 
-  # Transactions route
-  post '/transactions', to: 'transactions#create'
+  # Payments route
+  post '/payments', to: 'payments#create'
 
   # Admin routes
   namespace :admins do

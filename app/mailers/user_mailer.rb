@@ -2,9 +2,9 @@
 class UserMailer < ApplicationMailer
   default from: 'marketingmoise@gmail.com'
 
-  def transaction_email(user, amount)
+  def payment_email(user, amount)
     @user = user
     @amount = amount
-    mail(to: @user.email, subject: 'Transaction Confirmation')
+    mail(to: @user.email, subject: 'Payment Confirmation')
   end
 end

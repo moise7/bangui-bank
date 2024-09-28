@@ -2,7 +2,7 @@ class Api::V1::UsersController < ApplicationController
   before_action :authenticate_user!, only: [:user_data]
 
   def user_data
-    formatted_balance = format('$%.2f', @current_user.balance)
+    formatted_balance = format('%.2f', @current_user.balance)
     render json: {
       user: {
         email: @current_user.email,

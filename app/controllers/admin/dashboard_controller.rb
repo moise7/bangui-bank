@@ -3,6 +3,6 @@ class Admin::DashboardController < ApplicationController
 
   def index
     @users = User.all
-    @recent_transactions = Transaction.order(created_at: :desc).limit(10) # Adjust as needed
+    @recent_payments = Payment.order(created_at: :desc).limit(10) # Adjust as needed
   end
 end

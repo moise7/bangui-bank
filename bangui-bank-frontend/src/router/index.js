@@ -4,14 +4,14 @@ import Home from '../components/Home.vue';
 import Login from '../components/Login.vue';
 import Signup from '../components/Signup.vue';
 import Dashboard from '../components/Dashboard.vue';
-import TransferForm from '../components/TransferForm.vue'; // Import the SendMoney component
+import PaymentForm from '../components/PaymentForm.vue'; // Import the SendMoney component
 
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
   { path: '/signup', component: Signup },
   { path: '/dashboard/:userId', component: Dashboard }, // Fixed the dynamic userId param
-  { path: '/transfer-form', component: TransferForm }, // Route for Send Money
+  { path: '/payment-form', component: PaymentForm }, // Route for Send Money
 ];
 
 const router = createRouter({

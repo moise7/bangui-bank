@@ -7,6 +7,7 @@ export const useUserStore = defineStore('user', {
     token: localStorage.getItem('token') || null,
     userId: localStorage.getItem('userId') || null, // Load user ID from localStorage
     towns: [],
+    paymenys: []
   }),
   actions: {
     async loginUser(credentials) {
@@ -61,6 +62,21 @@ export const useUserStore = defineStore('user', {
       } catch (error) {
         console.error('Error fetching towns:', error);
         this.error = 'Failed to fetch towns. Please try again later.'; // Optional: Set an error message
+      }
+    },
+    async fetchPayments() {
+      if (!this.token || !this.userId) {
+        console.error('No token or user ID found, please login');
+        return;
+      }
+
+      try {
+        const response = await axios.get('http://localhost:3000/api/v1/payments', {
+          headers: { Authorization: `Bearer ${this.token}` },
+        });
+        this.payments = response.data.payments; // Update payments state
+      } catch (error) {
+        console.error('Failed to fetch payments:', error.response ? error.response.data : error.message);
       }
     },
     logout() {

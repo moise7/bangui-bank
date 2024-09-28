@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h2>Your Transactions</h2>
+    <h2>Your payments</h2>
     <ul>
-      <li v-for="transaction in transactions" :key="transaction.id">
-        {{ transaction.amount }} sent to {{ transaction.receiver.email }} on {{ transaction.created_at }}
+      <li v-for="payment in payments" :key="payment.id">
+        {{ payment.amount }} sent to {{ payment.receiver.email }} on {{ payment.created_at }}
       </li>
     </ul>
   </div>
@@ -15,12 +15,12 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      transactions: []
+      payments: []
     };
   },
   async created() {
-    const response = await axios.get('/transactions');
-    this.transactions = response.data;
+    const response = await axios.get('/payments');
+    this.payments = response.data;
   }
 };
 </script>

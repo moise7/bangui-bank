@@ -9,8 +9,8 @@
 <h2>Total Users: <%= @users.count %></h2>
 <h2>Total Balance: $<%= @users.sum { |user| user.balance || 0.0 }.round(2) %></h2>
 
-<!-- Display recent transactions -->
-<h3>Recent Transactions</h3>
+<!-- Display recent payments -->
+<h3>Recent payments</h3>
 <table>
   <thead>
     <tr>
@@ -20,11 +20,11 @@
     </tr>
   </thead>
   <tbody>
-    <% @recent_transactions.each do |transaction| %>
+    <% @recent_payments.each do |payment| %>
       <tr>
-        <td><%= transaction.id %></td>
-        <td>$<%= transaction.amount %></td>
-        <td><%= transaction.created_at %></td>
+        <td><%= payment.id %></td>
+        <td>$<%= payment.amount %></td>
+        <td><%= payment.created_at %></td>
       </tr>
     <% end %>
   </tbody>

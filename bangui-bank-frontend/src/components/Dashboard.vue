@@ -1,53 +1,80 @@
 <template>
-  <div class="dashboard">
-    <nav class="top-nav">
-      <a href="#" v-for="item in navItems" :key="item" @click="handleNavClick(item)">
+  <div class="dashboard font-mona bg-background1">
+    <nav class="top-nav bg-primary text-white p-4">
+      <a href="#"
+         v-for="item in navItems"
+         :key="item"
+         @click="handleNavClick(item)"
+         class="mr-4 hover:text-secondary transition">
         {{ item }}
       </a>
     </nav>
-    <div class="title text-3xl text-center" v-if="userStore.user && userStore.user.username">
-      <h1><strong>Bievenue,</strong> {{ userStore.user.first_name }}</h1>
+
+    <div class="title text-3xl text-center mt-6" v-if="userStore.user && userStore.user.username">
+      <h1><strong>Bienvenue,</strong> {{ userStore.user.first_name }}</h1>
     </div>
 
     <!-- Accounts Section -->
-    <div class="accounts-section" v-if="userStore.user && userStore.user.username">
-          <p><strong>Available Balance</strong> {{ userStore.user.balance }}</p>
-          <p><strong>Created At:</strong> {{ new Date(userStore.user.created_at).toLocaleDateString() }}</p>
-        </div>
-    <div class="dashboard-content">
+    <div class="accounts-section bg-gray-100 p-4 mt-4 rounded-md shadow-md" v-if="userStore.user && userStore.user.username">
+      <p class="text-lg"><strong>Solde disponible:</strong> {{ formattedBalance }} </p>
+      <p class="text-sm"><strong>Créé le:</strong> {{ new Date(userStore.user.created_at).toLocaleDateString('fr-FR') }}</p>
+      <select v-model="selectedCurrency" class="mt-2 p-2 border border-gray-300 rounded">
+        <option value="€">Euro (€)</option>
+        <option value="$">Dollar ($)</option>
+        <option value="CFA">Central African CFA Franc (CFA)</option>
+      </select>
+    </div>
+
+    <div class="dashboard-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
       <!-- Payment History Section -->
-      <div class="payment-history">
-        <h3>Payment History</h3>
-        <ul class="payment-list">
-          <li v-for="payment in payments" :key="payment.id">
-            <div class="payment-date">{{ payment.date }}</div>
-            <div class="payment-description">{{ payment.description }}</div>
-            <div class="payment-amount">{{ payment.amount }}</div>
+      <div class="payment-history bg-gray-100 p-4 rounded-md shadow-md">
+        <h3 class="text-xl font-bold mb-4">Historique des paiements</h3>
+        <div class="flex font-bold border-b-2 border-gray-800 mb-2">
+          <div class="flex-1 text-left py-1">Date</div>
+          <div class="flex-1 text-left py-2">Nom</div>
+          <div class="flex-1 text-left py-2">Description</div>
+          <div class="flex-1 text-left py-2">Montant</div>
+        </div>
+
+        <ul class="list-none p-0">
+          <li
+            v-for="(payment, index) in userStore.payments"
+            :key="payment.id"
+            :class="{'bg-gray-200': index % 2 === 0, 'bg-white': index % 2 !== 0}"
+            class="flex py-3 border-b border-gray-300"
+          >
+            <div class="flex-1">{{ new Date(payment.created_at).toLocaleDateString('fr-FR') }}</div>
+            <div class="flex-1">{{ payment.recipient_first_name }} {{ payment.recipient_last_name }}</div>
+            <div class="flex-1">{{ payment.description }}</div>
+            <div class="flex-1">{{ formatCurrency(payment.amount) }}</div>
           </li>
         </ul>
       </div>
 
       <!-- Calculator and Calendar Section -->
-      <div class="calculator-and-calendar">
-        <div class="calculator">
-          <div class="calculator-display" ref="calculatorDisplay">0</div>
-          <div class="calculator-buttons">
-            <button v-for="btn in calculatorButtons" :key="btn" @click="handleCalculatorButtonClick(btn)">
+      <div class="calculator-and-calendar space-y-4">
+        <div class="calculator bg-gray-100 p-4 rounded-md shadow-md">
+          <div class="calculator-display bg-gray-200 p-2 text-right text-2xl" ref="calculatorDisplay">0</div>
+          <div class="calculator-buttons grid grid-cols-4 gap-2 mt-2">
+            <button v-for="btn in calculatorButtons"
+                    :key="btn"
+                    @click="handleCalculatorButtonClick(btn)"
+                    class="bg-primary text-white py-2 rounded hover:bg-accent transition">
               {{ btn }}
             </button>
           </div>
         </div>
 
-        <div class="calendar">
-          <div class="calendar-header">
-            <button @click="previousMonth">&lt;</button>
-            <h3>{{ currentMonthYear }}</h3>
-            <button @click="nextMonth">&gt;</button>
+        <div class="calendar bg-gray-100 p-4 rounded-md shadow-md">
+          <div class="calendar-header flex justify-between items-center mb-4">
+            <button @click="previousMonth" class="bg-primary text-white py-1 px-2 rounded hover:bg-accent transition">&lt;</button>
+            <h3 class="text-lg font-bold">{{ currentMonthYear }}</h3>
+            <button @click="nextMonth" class="bg-primary text-white py-1 px-2 rounded hover:bg-accent transition">&gt;</button>
           </div>
-          <div class="calendar-grid">
-            <div v-for="day in daysOfWeek" :key="day" class="calendar-day-header">{{ day }}</div>
+          <div class="calendar-grid grid grid-cols-7">
+            <div v-for="day in daysOfWeek" :key="day" class="calendar-day-header font-bold text-center">{{ day }}</div>
             <div v-for="date in calendarDates" :key="date.getTime()"
-                  :class="['calendar-day', { 'current-month': isCurrentMonth(date), 'today': isToday(date) }]">
+                  :class="['calendar-day border text-center p-2', { 'bg-blue-100': isCurrentMonth(date), 'bg-blue-300': isToday(date) }]">
               {{ date.getDate() }}
             </div>
           </div>
@@ -66,46 +93,43 @@ export default {
   name: 'BankingDashboard',
   data() {
     return {
-      navItems: ['Accounts', 'Move Money', 'Financial Tools', 'Card Control', 'Send Money', 'Additional Services', 'Logout'],
+      navItems: ['Comptes', 'Transférer de l\'argent', 'Outils financiers', 'Contrôle de carte', 'Envoyer de l\'argent', 'Services supplémentaires', 'Déconnexion'],
       currentDate: new Date(),
-      daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+      daysOfWeek: ['Di', 'Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa'],
       calculatorButtons: ['C', '±', '%', '÷', '7', '8', '9', '×', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='],
-      payments: [
-        { id: 1, date: '2024-08-01', description: 'Electric Bill', amount: '-$120.45' },
-        { id: 2, date: '2024-07-28', description: 'Internet Bill', amount: '-$60.00' },
-        { id: 3, date: '2024-07-15', description: 'Phone Bill', amount: '-$30.00' },
-        // Add more payments as needed
-      ],
-      user: null, // Data property for user information
-    }
+      selectedCurrency: '€', // Default currency symbol
+    };
   },
   setup() {
     const userStore = useUserStore();
     const router = useRouter();
-    const navItems = ['Accounts', 'Move Money', 'Financial Tools', 'Card Control', 'Send Money', 'Additional Services', 'Logout'];
 
     function handleNavClick(item) {
-      if (item === 'Logout') {
-        userStore.logout(); // Call the logout method
-        router.push('/'); // Redirect to the home page
-      } else if (item === 'Send Money') {
-        router.push('/transfer-form');
+      if (item === 'Déconnexion') {
+        userStore.logout();
+        router.push('/');
+      } else if (item === 'Envoyer de l\'argent') {
+        router.push('/payment-form');
       }
     }
 
     onMounted(async () => {
       await userStore.fetchUserData();
+      await userStore.fetchPayments();
+      console.log('test', userStore.fetchPayments());
     });
 
     return {
       userStore,
       handleNavClick,
-      navItems,
     };
   },
   computed: {
+    formattedBalance() {
+      return this.formatCurrency(this.userStore.user.balance);
+    },
     currentMonthYear() {
-      return this.currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+      return this.currentDate.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
     },
     calendarDates() {
       const year = this.currentDate.getFullYear();
@@ -122,7 +146,7 @@ export default {
       }
 
       return dates;
-    }
+    },
   },
   methods: {
     previousMonth() {
@@ -150,7 +174,7 @@ export default {
         try {
           display.innerText = eval(currentText);
         } catch {
-          display.innerText = 'Error';
+          display.innerText = 'Erreur';
         }
       } else {
         if (currentText === '0') {
@@ -159,164 +183,19 @@ export default {
           display.innerText += button;
         }
       }
-    }
+    },
+    formatCurrency(amount) {
+      if (this.selectedCurrency === 'CFA') {
+        return `${amount} CFA`;
+      }
+      return `${this.selectedCurrency}${amount}`;
+    },
   },
 };
 </script>
 
 <style scoped>
-.dashboard {
-  font-family: Arial, sans-serif;
-}
-
-.top-nav {
-  background-color: #003366;
-  color: white;
-  padding: 10px;
-}
-
-.top-nav a {
-  color: white;
-  text-decoration: none;
-  margin-right: 15px;
-  cursor: pointer;
-}
-
-.title {
-  padding: 20px;
-}
-.dashboard-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
-
-.accounts-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  padding: 20px;
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
-  margin: 0 20px; /* Add margin: 0 top/bottom and 40px left/right */
-}
-
-
-.payment-history {
-  /* margin-top: 20px; */
-  background-color: #f8f8f8;
-  padding: 15px;
-  border: 1px solid #ddd;
-}
-
-.payment-history h3 {
-  margin-top: 0;
-}
-
-.payment-list {
-  list-style-type: none;
-  padding: 0;
-}
-
-.payment-list li {
-  border-bottom: 1px solid #ddd;
-  padding: 10px 0;
-  display: flex;
-  justify-content: space-between;
-}
-
-.payment-date, .payment-description, .payment-amount {
-  flex: 1;
-  text-align: left;
-}
-
-.payment-amount {
-  text-align: right;
-}
-
-.btn-transfer, .btn-settings, .btn-signup {
-  background-color: #cc5500;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  cursor: pointer;
-}
-
-.calculator-and-calendar {
-  display: flex;
-  flex-direction: column;
-}
-
-.calculator {
-  margin-bottom: 20px;
-}
-
-.calculator-display {
-  background-color: #f0f0f0;
-  padding: 10px;
-  text-align: right;
-  font-size: 1.5em;
-}
-
-.calculator-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
-}
-
-.calculator-buttons button {
-  padding: 10px;
-  font-size: 1em;
-  background-color: #e0e0e0;
-  border: none;
-  cursor: pointer;
-}
-
-.calendar {
-  font-size: 0.8em;
-}
-
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-}
-
-.calendar-day-header, .calendar-day {
-  text-align: center;
-  padding: 2px;
-}
-
 .calendar-day {
-  border: 1px solid #eee;
-}
-
-.current-month {
-  background-color: #f0f0f0;
-}
-
-.today {
-  background-color: #e6f2ff;
-  font-weight: bold;
-}
-
-.btn-transfer {
-  text-decoration: none;
-  margin-right: 15px; /* Add space between Transfer and Settings */
-}
-
-.btn-settings {
-  margin-left: 15px; /* Add space between Settings and other elements */
-}
-
-.btn-signup {
-  margin-top: 20px; /* Add space above the Sign up button */
+  transition: background-color 0.3s;
 }
 </style>

@@ -6,7 +6,7 @@ class TransferService
   end
 
   def call
-    ActiveRecord::Base.transaction do
+    ActiveRecord::Base.payment do
       @sender.update!(balance: @sender.balance - @amount)
       @receiver.update!(balance: @receiver.balance + @amount)
       BankTransaction.create!(sender: @sender, receiver: @receiver, amount: @amount)
