@@ -1,13 +1,13 @@
 <template>
   <div class="signup bg-gray-200 min-h-screen flex flex-col items-center justify-center p-4">
-    <h3 class="text-2xl font-bold mb-6">Sign Up!</h3>
+    <h3 class="text-2xl font-bold mb-6">Inscription</h3>
     <form @submit="onSignUp" class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
       <!-- First Name -->
       <input
         class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="text"
         v-model="firstName"
-        placeholder="First Name"
+        placeholder="Prénom"
       />
 
       <!-- Middle Name -->
@@ -15,7 +15,7 @@
         class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="text"
         v-model="middleName"
-        placeholder="Middle Name"
+        placeholder="Deuxième Prénom"
       />
 
       <!-- Last Name -->
@@ -23,7 +23,7 @@
         class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="text"
         v-model="lastName"
-        placeholder="Last Name"
+        placeholder="Nom de Famille"
       />
 
       <!-- Date of Birth -->
@@ -31,7 +31,7 @@
         class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="date"
         v-model="dateOfBirth"
-        placeholder="Date of Birth"
+        placeholder="Date de Naissance"
       />
 
       <!-- Country Dropdown -->
@@ -39,18 +39,18 @@
         class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         v-model="country"
       >
-        <option disabled value="">Select Country</option>
-        <option value="Central Africa Republic">Central Africa Republic</option>
-        <option value="Other Country">Other Country</option>
+        <option disabled value="">Sélectionnez un Pays</option>
+        <option value="République Centrafricaine">République Centrafricaine</option>
+        <option value="Autre Pays">Autre Pays</option>
       </select>
 
-      <!-- Town Dropdown (if Central Africa Republic is selected) -->
-      <div v-if="country === 'Central Africa Republic'">
+      <!-- Town Dropdown (if Central African Republic is selected) -->
+      <div v-if="country === 'République Centrafricaine'">
         <select
           class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           v-model="town"
         >
-          <option disabled value="">Select Town</option>
+          <option disabled value="">Sélectionnez une Ville</option>
           <option v-for="townItem in towns" :key="townItem" :value="townItem">
             {{ townItem }}
           </option>
@@ -62,7 +62,7 @@
         class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="text"
         v-model="phoneNumber"
-        placeholder="Phone Number"
+        placeholder="Numéro de Téléphone"
       />
 
       <!-- Username -->
@@ -70,7 +70,7 @@
         class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="text"
         v-model="username"
-        placeholder="Username"
+        placeholder="Nom d'utilisateur"
       />
 
       <!-- Email -->
@@ -86,7 +86,7 @@
         class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="password"
         v-model="password"
-        placeholder="Password"
+        placeholder="Mot de Passe"
       />
 
       <!-- Confirm Password -->
@@ -94,13 +94,13 @@
         class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="password"
         v-model="passwordConfirmation"
-        placeholder="Confirm Password"
+        placeholder="Confirmez le Mot de Passe"
       />
 
       <!-- Submit Button -->
       <button
         type="submit"
-        class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold text-lg shadow-md hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300"
+        class="w-full py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors duration-300 font-semibold cursor-pointer"
       >
         S'inscrire
       </button>
@@ -113,15 +113,14 @@
 
     <!-- Link to Login -->
     <p class="text-gray-600 mt-4">
-      Already have an account?
+      Vous avez déjà un compte ?
       <router-link
         to="/login"
-        class="text-blue-600 font-semibold hover:underline hover:text-blue-500 transition-colors duration-300"
+        class="text-yellow-500 font-semibold hover:underline hover:text-yellow-600 transition-colors duration-300"
       >
-        Login
+        Connectez-vous
       </router-link>
     </p>
-
   </div>
 </template>
 
@@ -136,7 +135,6 @@ export default {
     const userStore = useUserStore();
     const router = useRouter();
 
-    // Define reactive state
     const firstName = ref("");
     const middleName = ref("");
     const lastName = ref("");
@@ -150,22 +148,19 @@ export default {
     const passwordConfirmation = ref("");
     const signUpError = ref(null);
 
-    // Fetch towns from Pinia store on component mount
+    // Fetch towns from the store
     onMounted(() => {
       if (!userStore.towns.length) {
         userStore.fetchTowns();
-        console.log("FetchTowns", userStore.fetchTowns())
       }
     });
 
-    // Watch for changes in the selected country to reset town selection
     watch(country, (newCountry) => {
-      if (newCountry !== 'Central Africa Republic') {
+      if (newCountry !== 'République Centrafricaine') {
         town.value = "";
       }
     });
 
-    // Handle sign-up form submission
     const onSignUp = async (event) => {
       event.preventDefault();
       const data = {
@@ -174,7 +169,7 @@ export default {
           middle_name: middleName.value,
           last_name: lastName.value,
           date_of_birth: dateOfBirth.value,
-          town: town.value, // Selected town
+          town: town.value,
           country: country.value,
           phone_number: phoneNumber.value,
           username: username.value,
@@ -190,14 +185,14 @@ export default {
           if (userStore.user && userStore.user.id) {
             router.push(`/dashboard/${userStore.user.id}`);
           } else {
-            signUpError.value = "User data is not available.";
+            signUpError.value = "Les données utilisateur ne sont pas disponibles.";
           }
         } else {
-          alert('Signup failed. Please try again.');
+          signUpError.value = "L'inscription a échoué. Veuillez réessayer.";
         }
       } catch (error) {
-        console.error('Sign-up error:', error.response ? error.response.data : error.message);
-        signUpError.value = "There was an error signing up. Please try again.";
+        console.error('Erreur d\'inscription:', error.response ? error.response.data : error.message);
+        signUpError.value = "Une erreur est survenue lors de l'inscription. Veuillez réessayer.";
       }
     };
 
@@ -206,9 +201,9 @@ export default {
       middleName,
       lastName,
       dateOfBirth,
-      town, // Bind the selected town
-      towns: userStore.towns, // Use towns from Pinia store
-      country, // Bind country
+      town,
+      towns: userStore.towns,
+      country,
       phoneNumber,
       username,
       email,

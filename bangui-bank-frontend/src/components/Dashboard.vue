@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard font-mona bg-background1">
-    <nav class="top-nav bg-primary text-white p-4">
+    <nav class="top-nav bg-goldColor text-black p-4">
       <a href="#"
          v-for="item in navItems"
          :key="item"
@@ -59,7 +59,7 @@
             <button v-for="btn in calculatorButtons"
                     :key="btn"
                     @click="handleCalculatorButtonClick(btn)"
-                    class="bg-primary text-white py-2 rounded hover:bg-accent transition">
+                    class="bg-goldColor text-white py-2 rounded hover:bg-black transition">
               {{ btn }}
             </button>
           </div>
@@ -67,9 +67,9 @@
 
         <div class="calendar bg-gray-100 p-4 rounded-md shadow-md">
           <div class="calendar-header flex justify-between items-center mb-4">
-            <button @click="previousMonth" class="bg-primary text-white py-1 px-2 rounded hover:bg-accent transition">&lt;</button>
+            <button @click="previousMonth" class="bg-goldColor text-white py-1 px-2 rounded hover:bg-black transition">&lt;</button>
             <h3 class="text-lg font-bold">{{ currentMonthYear }}</h3>
-            <button @click="nextMonth" class="bg-primary text-white py-1 px-2 rounded hover:bg-accent transition">&gt;</button>
+            <button @click="nextMonth" class="bg-goldColor text-white py-1 px-2 rounded hover:bg-black transition">&gt;</button>
           </div>
           <div class="calendar-grid grid grid-cols-7">
             <div v-for="day in daysOfWeek" :key="day" class="calendar-day-header font-bold text-center">{{ day }}</div>
