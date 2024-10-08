@@ -59,3 +59,5 @@ gem 'jwt_sessions', '~> 2.6'
 gem 'twilio-ruby'
 gem 'pg'
 gem 'sendgrid-ruby'
+
+gem "dockerfile-rails", ">= 1.6", :group => :development
