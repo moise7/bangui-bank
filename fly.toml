@@ -1,13 +1,19 @@
-# fly.toml app configuration file generated for bangui-bank-backend-silent-log-5638 on 2024-10-08T14:56:29-04:00
+# fly.toml app configuration file generated for bangui-bank-backend on 2024-10-08T16:52:15-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'bangui-bank-backend-silent-log-5638'
+app = 'bangui-bank-backend'
 primary_region = 'ewr'
 console_command = '/rails/bin/rails console'
 
 [build]
+
+[deploy]
+  release_command = "./bin/rails db:prepare"
+
+[env]
+  DATABASE_URL = 'sqlite3:///data/production.sqlite3'
 
 [http_service]
   internal_port = 3000
@@ -21,3 +27,7 @@ console_command = '/rails/bin/rails console'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
+
+[[statics]]
+  guest_path = '/rails/public'
+  url_prefix = '/'
